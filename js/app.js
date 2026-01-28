@@ -1,7 +1,13 @@
 console.log("JavaScript chargé !");
 
+// Définir la date max à aujourd'hui
+const champDate = document.getElementById('date');
+const aujourdhui = new Date().toISOString().split('T')[0];
+champDate.max = aujourdhui;
+champDate.valueAsDate = new Date(); // Date du jour par défaut
+
 // Récupérer le formulaire
-const formulaire = document.getElementById('mon-formulaire');
+const formulaire = document.getElementById('monFormulaire');
 
 // Récupérer les éléments des checkboxes
 const checkboxAucun = document.getElementById('sport-aucun');
@@ -16,7 +22,7 @@ checkboxAucun.addEventListener('change', function() {
     }
 });
 
-// Si on choisi un sport, décocher "Aucun"
+// Si on choisit un sport, décocher "Aucun"
 autresCheckboxes.forEach(function (checkbox) {
     checkbox.addEventListener('change', function() {
         if (this.checked) {
@@ -30,8 +36,7 @@ formulaire.addEventListener('submit', function(e) {
     e.preventDefault(); // Empêche le rechargement de la page
 
     // Récupérer la valeur du champ date
-    const champDate = document.getElementById('date');
-    const valeurDate = champDate.value;
+    const valeurDate = champDate.value ;   
 
     // Récupérer la valeur du champ repas
     const champRepas = document.getElementById('repas');
@@ -44,15 +49,37 @@ formulaire.addEventListener('submit', function(e) {
         sports.push(checkbox.value);
     })
 
+    // Récupérer la valeur du champ symptômes digestifs
+    const champSymptomes = document.getElementById('symptomes');
+    const valeurSymptomes = champSymptomes.value;
+
+    // Vérifier que la date n'est pas vide
+    if (valeurDate.length === 0) {
+        alert("Veuillez sélectionner une date");
+        return;
+    }
+
+    // Vérifier que la date n'est pas dans le futur
+    const dateSelectionnee = new Date(valeurDate);
+    const dateAujourdhui = new Date();
+    dateAujourdhui.setHours(0, 0, 0, 0); // Mettre l'heure à minuit pour comparer seulement la date
+
+    if (dateSelectionnee > dateAujourdhui) {
+        alert("Vous ne pouvez pas sélectionner une date dans le futur");
+        return;
+    }
+
+    // Vérifier que la case repas n'est pas vide
+    if (valeurRepas.length === 0) {
+        alert("Veuillez entrer un repas dans la case 'Repas consommés'");
+        return;
+    }
+    
     // Vérifier qu'au moins un sport est sélectionné
     if (sports.length === 0) {
         alert("Veuillez sélectionner au moins un sport ou 'Aucun'");
         return;
     }
-
-    // Récupérer la valeur du champ symptômes
-    const champSymptomes = document.getElementById('symptomes');
-    const valeurSymptomes = champSymptomes.value;
 
     // Créer l'objet journée
     const journee = {
@@ -71,6 +98,8 @@ formulaire.addEventListener('submit', function(e) {
 
     // Réinitialiser le formulaire
     formulaire.reset();
+    // Remettre la date du jour après reset
+    champDate.valueAsDate = new Date();
 
     // console.log("Date saisie :", valeurDate);
     // console.log("Repas consommés:", valeurRepas);
@@ -97,7 +126,7 @@ function saveJournee(journee) {
 // Afficher l'historique
 function afficherHistorique() {
     const journees = getJournees();
-    const listeJournees = document.getElementById('liste-journees');
+    const listeJournees = document.getElementById('listeJournees');
 
     if (journees.length === 0) {
         listeJournees.innerHTML = '<p>Aucune journée enregistrée pour le moment.</p>';
@@ -110,7 +139,7 @@ function afficherHistorique() {
     });
 
     // Créer le tableau HTML
-    let html = '<table class="table-historique">';
+    let html = '<table class="tableHistorique">';
     html += '<thead><tr>';
     html += '<th>Date</th>';
     html += '<th>Repas</th>';
@@ -144,9 +173,18 @@ function afficherHistorique() {
     });
 
     html += '</tbody></table>';
-
     listeJournees.innerHTML = html;
 }
 
 afficherHistorique();
+
+// Bouton de réinitialisation
+const boutonReinitialisation = document.querySelector(".boutonReinitialisation");
+boutonReinitialisation.addEventListener('click', function () {
+    if (confirm("Voulez-vous vraiment supprimer toutes les données ?")) {
+        localStorage.clear();
+        afficherHistorique(); // Rafraîchir l'affichage
+        alert("Toutes les données ont été supprimées !");
+    }
+});
 

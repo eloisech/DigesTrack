@@ -16,27 +16,27 @@
     <main>
         <!-- 1ère section : Formulaire -->
         <section>
-            <h2>Ajouter une journée</h2>
+            <h2>📝Ajouter une journée</h2>
 
-            <form id="mon-formulaire">
+            <form id="monFormulaire">
                 <label>Date :</label>
-                <input type="date" id="date">
+                <input type="date" id="date" max="">
 
                 <label>Repas consommés :</label>
                 <textarea id="repas" rows="3" placeholder="Ex: Riz + thon + épinards"></textarea>
 
                 <label>Sport(s) pratiqué(s) :</label>
-                <div class="checkbox-group">
-                    <label class="checkbox-label">
+                <div class="checkboxGroup">
+                    <label class="checkboxLabel">
                         <input type="checkbox" name="sport" value="natation">Natation
                     </label>
-                    <label class="checkbox-label">
+                    <label class="checkboxLabel">
                         <input type="checkbox" name="sport" value="velo">Vélo
                     </label>
-                    <label class="checkbox-label">
+                    <label class="checkboxLabel">
                         <input type="checkbox" name="sport" value="course">Course à pied
                     </label>
-                    <label class="checkbox-label">
+                    <label class="checkboxLabel">
                         <input type="checkbox" name="sport" value="aucun" id="sport-aucun">Aucun
                     </label>
                 </div>
@@ -57,9 +57,11 @@
         <!-- 2ème section : Historique -->
         <section id="historique">
             <h2> 📜Historique </h2>
-            <div id="liste-journees">
+            <div id="listeJournees">
                 <p>Aucune journée enregistrée pour le moment.</p>
             </div>
+
+            <button class="boutonReinitialisation">Réinitialiser les données</button>
         </section>
 
     </main>

@@ -81,13 +81,13 @@ textarea {
 }
 
 /* Checkboxes */
-.checkbox-group {
+.checkboxGroup {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
 }
 
-.checkbox-label {
+.checkboxLabel {
     display: flex;
     align-items: center;
     cursor: pointer;
@@ -95,13 +95,13 @@ textarea {
     color: #333;
 }
 
-.checkbox-label input[type="checkbox"] {
+.checkboxLabel input[type="checkbox"] {
     width: auto;
     margin-right: 0.5rem;
     cursor: pointer;
 }
 
-.checkbox-label:hover {
+.checkboxLabel:hover {
     color: #4A90E2;
 }
 
@@ -114,36 +114,36 @@ select {
 }
 
 /* Tableau historique */
-.table-historique {
+.tableHistorique {
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
 }
 
-.table-historique thead {
+.tableHistorique thead {
     background-color: #4A90E2;
     color: white;
 }
 
-.table-historique th {
+.tableHistorique th {
     padding: 1rem;
     text-align: left;
     font-weight: bold;
 }
 
-.table-historique tbody tr {
+.tableHistorique tbody tr {
     border-bottom: 1px solid #ddd;
 }
 
-.table-historique tbody tr:nth-child(even) {
+.tableHistorique tbody tr:nth-child(even) {
     background-color: #f8f9fa;
 }
 
-.table-historique tbody tr:hover {
+.tableHistorique tbody tr:hover {
     background-color: #e9ecef;
 }
 
-.table-historique td {
+.tableHistorique td {
     padding: 1rem;
 }
 
@@ -161,4 +161,20 @@ select {
 .symptome-important {
     color: #F44336;
     font-weight: bold;
+}
+
+/* Bouton de réinitialisation */
+.boutonReinitialisation {
+    margin-top: 1rem;
+    background-color: #F44336;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.boutonReinitialisation:hover {
+    background-color: #D32F2F;
 }
