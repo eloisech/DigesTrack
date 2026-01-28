@@ -1,3 +1,4 @@
+/* CSS de base */
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -23,14 +24,14 @@ p {
 main {
     max-width: 800px;
     margin: 2rem auto;
-    padding: 0 1 rem;
+    padding: 0 1rem;
 }
 
 section {
     background: white;
     padding: 2rem;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0,1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 h2 {
@@ -38,6 +39,7 @@ h2 {
     margin-top: 0;
 }
 
+/* Formulaire */
 form {
     display: flex;
     flex-direction: column;
@@ -66,5 +68,97 @@ button {
 }
 
 button:hover {
-    background-color: 357ABD;
+    background-color: #357ABD;
+}
+
+textarea {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: Arial, sans-serif;
+    resize: vertical;
+}
+
+/* Checkboxes */
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: normal;
+    color: #333;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin-right: 0.5rem;
+    cursor: pointer;
+}
+
+.checkbox-label:hover {
+    color: #4A90E2;
+}
+
+select {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+/* Tableau historique */
+.table-historique {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.table-historique thead {
+    background-color: #4A90E2;
+    color: white;
+}
+
+.table-historique th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: bold;
+}
+
+.table-historique tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.table-historique tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.table-historique tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+.table-historique td {
+    padding: 1rem;
+}
+
+/* Code couleur symptômes */
+.symptome-aucun {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.symptome-leger {
+    color: #FF9800;
+    font-weight: bold;
+}
+
+.symptome-important {
+    color: #F44336;
+    font-weight: bold;
 }
