@@ -113,6 +113,25 @@ select {
     cursor: pointer;
 }
 
+/* Statistiques */
+#statistiques {
+    margin-bottom: 2rem;
+}
+
+#conteneurGraphique {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* Message si pas de données */
+.messageSiPasDeDonnees {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 2rem;
+}
+
 /* Tableau historique */
 .tableHistorique {
     width: 100%;

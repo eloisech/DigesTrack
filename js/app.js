@@ -92,6 +92,7 @@ formulaire.addEventListener('submit', function(e) {
     // Sauvegarder dans LocalStorage
     saveJournee(journee)
     afficherHistorique();
+    afficherGraphique();
 
     console.log("Journée sauvegardée :", journee);
     alert("Journée enregistrée avec succès !");
@@ -176,7 +177,92 @@ function afficherHistorique() {
     listeJournees.innerHTML = html;
 }
 
+let monGraphique = null; // Variable locale pour stocker le graphique
+
+function afficherGraphique() {
+    const journees = getJournees();
+    const canvas = document.getElementById('graphiqueSymptomes');
+    const conteneur = document.getElementById('conteneurGraphique');
+
+    // Si pas de données, affiche un message
+    if (journees.length === 0) {
+        conteneur.innerHTML = '<p class="messagePasDeDonnees>Aucune donnée à afficher. Enregistrez votre première journée !</p>';
+        return;
+    }
+
+    // S'assurer que le canvas existe
+    if (!canvas) {
+        conteneur.innerHTML = '<canvas id="graphiqueSymptomes></canvas>';
+    }
+
+    // Compter les symptômes
+    let aucun = 0;
+    let leger = 0;
+    let important = 0;
+
+    journees.forEach(function(journee) {
+        if (journee.symptomes === 'aucun') aucun++;
+        if (journee.symptomes === 'leger') leger++;
+        if (journee.symptomes === 'important') important++;
+    });
+
+    // Détruire l'ancien graphique s'il existe
+    if (monGraphique) {
+        monGraphique.destroy();
+    }
+
+    // Créer le nouveau graphique
+    const ctx = document.getElementById('graphiqueSymptomes').getContext('2d');
+    monGraphique = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['🟢 Aucun', '🟠 Léger', '🔴 Important'],
+            datasets: [{
+                label: 'Nombre de jours',
+                data: [aucun, leger, important],
+                backgroundColor: [
+                    '#4CAF50',
+                    '#FF9800',
+                    '#F44336'
+                ],
+                borderColor: [
+                    '#388E3C',
+                    '#F57C00',
+                    '#D32F2F'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: 'Répartition des symptômes digestifs',
+                    font: {
+                        size: 16
+                    }
+                }
+            }
+        }
+    });
+}
+
+
 afficherHistorique();
+afficherGraphique();
 
 // Bouton de réinitialisation
 const boutonReinitialisation = document.querySelector(".boutonReinitialisation");
@@ -184,7 +270,10 @@ boutonReinitialisation.addEventListener('click', function () {
     if (confirm("Voulez-vous vraiment supprimer toutes les données ?")) {
         localStorage.clear();
         afficherHistorique(); // Rafraîchir l'affichage
+        afficherGraphique();
         alert("Toutes les données ont été supprimées !");
     }
 });
+
+
 
