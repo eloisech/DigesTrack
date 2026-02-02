@@ -260,7 +260,6 @@ function afficherGraphique() {
     });
 }
 
-
 afficherHistorique();
 afficherGraphique();
 
@@ -275,5 +274,47 @@ boutonReinitialisation.addEventListener('click', function () {
     }
 });
 
+// Bouton d'export CSV
+const boutonExportCSV = document.querySelector(".boutonExportCSV");
+
+if(boutonExportCSV) {
+    boutonExportCSV.addEventListener('click', function () {
+        const journees = getJournees();
+
+        if (journees.length === 0) {
+            alert("Aucune donnée à exporter");
+            return;
+        }
+
+        // Créer le CSV
+        let csv = 'Date,Repas,Sports,Symptômes\n';
+
+        journees.forEach(function(journee) {
+            // Formater la date
+            const dateFormatee = new Date(journee.date + 'T00:00:00').toLocaleDateString('fr-FR');
+
+            // Formater les sports
+            const sports = journee.sports.join(' + ');
+
+            // Formater les symptômes
+            let symptomes = journee.symptomes;
+            if (journee.symptomes === 'aucun') symptomes = 'Aucun';
+            if (journee.symptomes === 'leger') symptomes = 'Léger';
+            if (journee.symptomes === 'important') symptomes = 'Important';
+
+            csv += dateFormatee + ',"' + journee.repas + '",' + sports + ',' + symptomes + '\n';
+        });
+        
+        // Télécharger le fichier
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;'});
+        const url = window.URL.createObjectURL(blob);
+        const lien = document.createElement('a');
+        lien.href = url;
+        lien.download = 'digesTrack-export.csv';
+        lien.click();
+
+        alert("Export CSV réussi !");
+    });
+}
 
 
