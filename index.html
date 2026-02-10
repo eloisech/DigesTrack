@@ -14,8 +14,34 @@
     </header>
 
     <main>
-        <!-- 1ère section : Formulaire -->
-        <section>
+        <!-- 1ère section : Statistiques -->
+        <section id="statistiques">
+            <h2>📊 Statistiques</h2>
+            <div id="conteneurGraphique">
+                <canvas id="graphiqueSymptomes"></canvas>
+            </div>
+        </section>
+
+        <!-- 2ème section : Historique -->
+        <section id="historique">
+            <h2> 📜Historique </h2>
+            <div id="listeJournees">
+                <p>Aucune journée enregistrée pour le moment.</p>
+            </div>
+
+            <button class="boutonExportCSV">📥 Exporter en CSV</button>
+        </section>
+
+    </main>
+
+    <!-- Bouton flottant pour ouvrir le formulaire -->
+     <button id="boutonOuvrirFormulaire" class="boutonFlottant" title="Ajouter une journée">➕</button>
+
+     <!-- Overlay (fond sombre) avec le formulaire -->
+      <div id="overlayFormulaire" class="overlay">
+        <div class="modalFormulaire">
+            <!-- Bouton fermer -->
+            <button id="boutonFermerFormulaire" class="boutonFermer">✖</button>
             <h2>📝Ajouter une journée</h2>
 
             <form id="monFormulaire">
@@ -51,30 +77,8 @@
 
                 <button type="submit">Enregistrer</button>
             </form>
-
-        </section>
-
-        <!-- 2ème section : Statistiques -->
-        <section id="statistiques">
-            <h2>📊 Statistiques</h2>
-            <div id="conteneurGraphique">
-                <canvas id="graphiqueSymptomes"></canvas>
-            </div>
-        </section>
-
-        <!-- 3ème section : Historique -->
-        <section id="historique">
-            <h2> 📜Historique </h2>
-            <div id="listeJournees">
-                <p>Aucune journée enregistrée pour le moment.</p>
-            </div>
-
-            <button class="boutonReinitialisation">Réinitialiser les données</button>
-
-            <button class="boutonExportCSV">📥 Exporter en CSV</button>
-        </section>
-
-    </main>
+        </div>
+      </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/app.js"></script> <!-- Liaison avec le code JavaScript -->
