@@ -16,7 +16,9 @@
     <main>
         <!-- 1ère section : Statistiques -->
         <section id="statistiques">
-            <h2>📊 Statistiques</h2>
+            <h2>📊 Statistiques et Analyses</h2>
+
+            <!-- Graphique 1 : Répartition générale des symptômes -->
             <div id="conteneurGraphique">
                 <canvas id="graphiqueSymptomes"></canvas>
             </div>
@@ -48,10 +50,33 @@
                 <label>Date :</label>
                 <input type="date" id="date" max="">
 
-                <label>Repas consommés :</label>
-                <textarea id="repas" rows="3" placeholder="Ex: Riz + thon + épinards"></textarea>
+                <h3 class="sousTitreFormulaire">🍽️ Aliments consommés</h3>
 
-                <label>Sport(s) pratiqué(s) :</label>
+                <label>🌾 Féculents :</label>
+                <input type="text" id="feculents" placeholder="Ex: riz, pâtes, pain, pommes de terre">
+
+                <label>🥩 Protéines :</label>
+                <input type="text" id="proteines" placeholder="Ex: poulet, poisson, oeufs, tofu">
+
+                <label>🥬 Légumes :</label>
+                <input type="text" id="legumes" placeholder="Ex: épinards, carottes, tomates">
+
+                <label>🍎 Fruits :</label>
+                <input type="text" id="fruits" placeholder="Ex: pomme, banane, orange">
+
+                <label>🥛 Produits laitiers :</label>
+                <input type="text" id="laitiers" placeholder="Ex: lait, yaourt, fromage">
+
+                <label>🥑 Lipides :</label>
+                <input type="text" id="lipides" placeholder="Ex: huile d'olive, beurre, avocat, noix">
+
+                <label>☕ Boissons :</label>
+                <input type="text" id="boissons" placeholder="Ex: eau, café, thé, jus d'orange, boisson isotonique">
+
+                <label>🍯 Autres :</label>
+                <input type="text" id="Autres" placeholder="Ex: sauce, condiments, snacks">
+
+                <label class="labelSport">Sport(s) pratiqué(s) :</label>
                 <div class="checkboxGroup">
                     <label class="checkboxLabel">
                         <input type="checkbox" name="sport" value="natation">Natation

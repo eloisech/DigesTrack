@@ -81,6 +81,137 @@ textarea {
     resize: vertical;
 }
 
+/* Bouton formulaire */
+.boutonFlottant {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    background-color: white;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.boutonFlottant:hover {
+    background-color: #357ABD;
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+
+/* Overlay (fond sombre) */
+.overlay {
+    display: none; /* Caché par défaut */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 2rem 1rem;
+}
+
+.overlay.active {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modalFormulaire {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    max-width: 600px;
+    width: 100%;
+    margin: 2rem auto;
+    position: relative;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.boutonFermer {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #999;
+    padding: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.boutonFermer:hover {
+    color: #F44336;
+}
+
+.modalFormulaire h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #4A90E2;
+}
+
+.sousTitreForumlaire {
+    color: #4A90E2;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.labelSport {
+    margin-top: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .boutonFlottant {
+        bottom: 1rem;
+        right: 1rem;
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+
+    .modalFormulaire {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+}
+
 /* Checkboxes */
 .checkboxGroup {
     display: flex;
@@ -125,12 +256,10 @@ select {
     padding: 1rem;
 }
 
-/* Message si pas de données */
-.messageSiPasDeDonnees {
-    text-align: center;
-    color: #666;
-    font-style: italic;
-    padding: 2rem;
+.titreGraphique {
+    color: #4A90E2;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
 }
 
 /* Tableau historique */
@@ -235,122 +364,3 @@ select {
     background-color: #45a049;
 }
 
-/* Bouton formulaire */
-.boutonFlottant {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: 60px;
-    height: 60px;
-    background-color: #4A90E2;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    font-size: 2rem;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    transition: all 0.3s ease;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-}
-
-.boutonFlottant:hover {
-    background-color: #357ABD;
-    transform: scale(1.1);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-}
-
-/* Overlay (fond sombre) */
-.overlay {
-    display: none; /* Caché par défaut */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    z-index: 1000;
-    overflow-y: auto;
-    padding: 2rem 1rem;
-}
-
-.overlay.active {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-.modalFormulaire {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-    max-width: 600px;
-    width: 100%;
-    margin: 2rem auto;
-    position: relative;
-    animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-    from {
-        transform: translateY(-50px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-.boutonFermer {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: transparent;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #999;
-    padding: 0.5rem;
-    transition: color 0.3s ease;
-}
-
-.boutonFermer:hover {
-    color: #F44336;
-}
-
-.modalFormulaire h2 {
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-    color: #4A90E2;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .boutonFlottant {
-        bottom: 1rem;
-        right: 1rem;
-        width: 50px;
-        height: 50px;
-        font-size: 1.5rem;
-    }
-
-    .modalFormulaire {
-        margin: 1rem;
-        padding: 1.5rem;
-    }
-}
