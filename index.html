@@ -19,8 +19,27 @@
             <h2>📊 Statistiques et Analyses</h2>
 
             <!-- Graphique 1 : Répartition générale des symptômes -->
-            <div id="conteneurGraphique">
+            <div id="conteneurGraphique" class="conteneurGraphiqueIndividuel">
+                <h3 class="titreGraphique">Répartition des symptômes</h3>
                 <canvas id="graphiqueSymptomes"></canvas>
+            </div>
+
+            <!-- Graphique 2 : Top aliments à risque -->
+            <div id="conteneurTopAliments" class="conteneurGraphiqueIndividuel">
+                <h3 class="titreGraphique">🚨 Top 10 des aliments à risque</h3>
+                <canvas id="graphiqueTopAliments"></canvas>
+            </div>
+
+            <!-- Graphique 3 : Symptômes par catégorie d'aliments -->
+            <div id="conteneurCategories" class="conteneurGraphiqueIndividuel">
+                <h3 class="titreGraphique">📂 Symptômes par catégorie</h3>
+                <canvas id="graphiqueCategories"></canvas>
+            </div>
+
+            <!-- Analyse intelligente -->
+            <div id="analyseIntelligente">
+                <h3 class="titreGraphique">💡 Analyse intelligente</h3>
+                <div id="conteneurAnalyse"></div>
             </div>
         </section>
 
@@ -44,7 +63,7 @@
         <div class="modalFormulaire">
             <!-- Bouton fermer -->
             <button id="boutonFermerFormulaire" class="boutonFermer">✖</button>
-            <h2>📝Ajouter une journée</h2>
+            <h2>📝 Ajouter une journée</h2>
 
             <form id="monFormulaire">
                 <label>Date :</label>

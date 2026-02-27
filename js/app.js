@@ -1,9 +1,8 @@
-console.log("DigesTrack !");
+console.log("JavaScript chargé !");
 
-// Variable globale pour savoir si on est en mode modification
-let indexEnCoursDeModification = null;
+// CONFIGURATION INITIALE 
 
-// Définir la date max à aujourd'hui
+// Définir la date maximale à aujourd'hui
 const champDate = document.getElementById('date');
 const aujourdhui = new Date().toISOString().split('T')[0];
 champDate.max = aujourdhui;
@@ -15,6 +14,30 @@ const formulaire = document.getElementById('monFormulaire');
 // Récupérer les éléments des checkboxes
 const checkboxAucun = document.getElementById('sport-aucun');
 const autresCheckboxes = document.querySelectorAll('input[name="sport"]:not(#sport-aucun)');
+
+// Gestion du bouton flottant et de l'overlay
+const boutonOuvrirFormulaire = document.getElementById('boutonOuvrirFormulaire');
+const overlayFormulaire = document.getElementById('overlayFormulaire');
+const boutonFermerFormulaire = document.getElementById('boutonFermerFormulaire');
+
+// Ouvrir le formulaire
+boutonOuvrirFormulaire.addEventListener('click', function() {
+    overlayFormulaire.classList.add('active');
+});
+
+// Fermer le formulaire (bouton X)
+boutonFermerFormulaire.addEventListener('click', function() {
+    overlayFormulaire.classList.remove('active');
+});
+
+// Fermer le formulaire (clic sur l'overlay)
+overlayFormulaire.addEventListener('click', function(e) {
+    if (e.target === overlayFormulaire) {
+        overlayFormulaire.classList.remove('active');
+    }
+});
+
+// COMPORTEMENT DES CHECKBOXES
 
 // Si on coche "Aucun", décocher les autres cases
 checkboxAucun.addEventListener('change', function() {
@@ -34,69 +57,64 @@ autresCheckboxes.forEach(function (checkbox) {
     });
 });
 
-// Fonction helper pour nettoyer et parser les aliments
-function parseAliments(texte) {
-    if (!texte || text.trim() === '') return [];
-    // Séparer par une virgule ou un point-virgule, trim chaque élément
-    return text.split(/[.;]+/).map(item => item.trim()).filter(item => item.length > 0);
-}
+// SOUMISSION DU FORMULAIRE
 
-// Ecouter la soumission
 formulaire.addEventListener('submit', function(e) {
     e.preventDefault(); // Empêche le rechargement de la page
 
-    // Récupérer la valeur du champ date
-    const valeurDate = champDate.value;   
+    // Récupérer les valeurs
+    const valeurDate = champDate.value;
+    const champSymptomes = document.getElementById('symptomes');
+    const valeurSymptomes = champSymptomes.value;
 
-    // Récupérer les 8 catégories d'aliments
-    const feculents = parseAliments(document.getElementById('feculents').value);
-    const proteines = parseAliments(document.getElementById('proteiness').value);
-    const legumes = parseAliments(document.getElementById('legumes').value);
-    const fruits = parseAliments(document.getElementById('fruits').value);
-    const laitiers = parseAliments(document.getElementById('laitiers').value);
-    const lipides = parseAliments(document.getElementById('lipides').value);
-    const boissons = parseAliments(document.getElementById('boissons').value);
-    const autres = parseAliments(document.getElementById('autress').value);
+    // Récupérer les aliments par catégorie
+    const feculents = document.getElementById('feculents').value.trim();
+    const proteines = document.getElementById('proteines').value.trim();
+    const legumes = document.getElementById('legumes').value.trim();
+    const fruits = document.getElementById('fruits').value.trim();
+    const laitiers = document.getElementById('laitiers').value.trim();
+    const lipides = document.getElementById('lipides').value.trim();
+    const boissons = document.getElementById('boissons').value.trim();
+    const autres = document.getElementById('Autres').value.trim();
 
     // Récupérer les sports cochés
     const checkboxesCochees = document.querySelectorAll('input[name="sport"]:checked');
     const sports = [];
     checkboxesCochees.forEach(function(checkbox) {
         sports.push(checkbox.value);
-    })
+    });
 
-    // Récupérer la valeur du champ symptômes digestifs
-    const champSymptomes = document.getElementById('symptomes');
-    const valeurSymptomes = champSymptomes.value;
+    // VALIDATIONS
 
-    // Vérifier que la date n'est pas vide
+    // 1. Vérifier que la date n'est pas vide
     if (valeurDate.length === 0) {
-        alert("Veuillez sélectionner une date");
+        alert("⚠️ Veuillez sélectionner une date");
         return;
     }
 
-    // Vérifier que la date n'est pas dans le futur
-    const dateSelectionnee = new Date(valeurDate + 'T00:00:00');
+    // 2. Vérifier que la date n'est pas dans le futur
+    const dateSelectionnee = new Date(valeurDate);
     const dateAujourdhui = new Date();
-    dateAujourdhui.setHours(0, 0, 0, 0); // Mettre l'heure à minuit pour comparer seulement la date
+    dateAujourdhui.setHours(0, 0, 0, 0); // Mettre l'heure à minuit
 
     if (dateSelectionnee > dateAujourdhui) {
-        alert("Vous ne pouvez pas sélectionner une date dans le futur");
+        alert("⚠️ Vous ne pouvez pas sélectionner une date dans le futur");
         return;
     }
 
-    // Vérifier qu'au moins une catégorie d'aliments est renseignée
-    const tousLesAliments = [...feculents,...proteines,...legumes,...fruits,...laitiers,...lipides,...boissons,...autres];
-    if (tousLesAliments.length === 0) {
-        alert("Veuillez renseigner au moins une catégorie d'aliments");
+    // 3. Vérifier qu'au moins une catégorie d'aliments est remplie
+    if (!feculents && !proteines && !legumes && !fruits && !laitiers && !lipides && !boissons && !autres) {
+        alert("⚠️ Veuillez renseigner au moins une catégorie d'aliments");
         return;
     }
     
-    // Vérifier qu'au moins un sport est sélectionné
+    // 4. Vérifier qu'au moins un sport est sélectionné
     if (sports.length === 0) {
-        alert("Veuillez sélectionner au moins un sport ou 'Aucun'");
+        alert("⚠️ Veuillez sélectionner au moins un sport ou 'Aucun'");
         return;
     }
+
+    // SAUVEGARDE
 
     // Créer l'objet journée
     const journee = {
@@ -115,69 +133,68 @@ formulaire.addEventListener('submit', function(e) {
         symptomes: valeurSymptomes
     };
 
-    // Vérifier si on est en mode modification ou ajout
-    if (indexEnCoursDeModification !== null) {
-        // Mode modification 
-        const journees = getJournees();
-        journee.id = journees[indexEnCoursDeModification].id;
-        journees[indexEnCoursDeModification] = journee; // Remplacer
-        localStorage.setItem('journees', JSON.stringify(journees));
-        
-        console.log("Journée modifiée :", journee);
-        alert("Journée modifiée avec succès !");
-        indexEnCoursDeModification = null;
-    } else {
-        // Mode ajout 
-        saveJournee(journee)
-        console.log("Journée sauvegardée :", journee);
-        alert("Journée enregistrée avec succès !");
-    }
-    
-    // Rafraîchir l'affichage
+    // Sauvegarder dans LocalStorage
+    saveJournee(journee);
     afficherHistorique();
-    afficherGraphique();
+    afficherGraphiques();
+    afficherAnalyseIntelligente();
+
+    console.log("✅ Journée sauvegardée :", journee);
+    alert("✅ Journée enregistrée avec succès !");
 
     // Réinitialiser le formulaire
     formulaire.reset();
     // Remettre la date du jour après reset
     champDate.valueAsDate = new Date();
-    // Fermer l'overlay après soumission
+    
+    // Fermer l'overlay
+    overlayFormulaire.classList.remove('active');
 });
+
+// FONCTIONS LOCALSTORAGE
 
 // Récupérer toutes les journées du LocalStorage
 function getJournees() {
     const journeesJSON = localStorage.getItem('journees');
     if (journeesJSON) {
-        return JSON.parse(journeesJSON);
-    }
-    return []; // Tableau vide si rien n'est sauvegardé
-}
-
-// Sauvegarder une nouvelle journée
-function saveJournee(journee) {
-    const journees = getJournees(); 
-    journee.id = Date.now() + Math.random(); // ID unique
-    journees.push(journee); // Ajoute la nouvelle journée
-    localStorage.setItem('journees', JSON.stringify(journees)); // Sauvegarder
-}
-
-// Fonction pour obtenir tous les aliments d'une journée
-function getTousLesAliments(journee) {
-    if (journee.repas) {
-        return parseAliments(journee.repas)
-    }
-
-    if (journee.aliments) {
-        const aliments = [];
-        Object.values(journee.aliments).forEach(categorie => {
-            aliments.push(...categorie);
+        const journees = JSON.parse(journeesJSON);
+        
+        // Migration : convertir anciennes données (format "repas" en string) vers nouveau format
+        return journees.map(function(journee) {
+            // Si l'ancien format existe (repas en string)
+            if (journee.repas && typeof journee.repas === 'string' && !journee.aliments) {
+                return {
+                    date: journee.date,
+                    aliments: {
+                        feculents: '',
+                        proteines: '',
+                        legumes: '',
+                        fruits: '',
+                        laitiers: '',
+                        lipides: '',
+                        boissons: '',
+                        autres: journee.repas // Mettre l'ancien repas dans "autres"
+                    },
+                    sports: journee.sports,
+                    symptomes: journee.symptomes
+                };
+            }
+            // Sinon garder le format actuel
+            return journee;
         });
-        return aliments;
     }
     return [];
 }
 
-// Afficher l'historique
+// Sauvegarder une nouvelle journée
+function saveJournee(journee) {
+    const journees = getJournees();
+    journees.push(journee);
+    localStorage.setItem('journees', JSON.stringify(journees));
+}
+
+// AFFICHAGE HISTORIQUE
+
 function afficherHistorique() {
     const journees = getJournees();
     const listeJournees = document.getElementById('listeJournees');
@@ -187,11 +204,8 @@ function afficherHistorique() {
         return;
     }
 
-    // Créer une copie pour le tri
-    const journeesTriees = [...journees];
-    
-    // Trier la copie par date (plus récente en haut)
-    journeesTriees.sort(function(a,b) {
+    // Trier par date (plus récente en haut)
+    journees.sort(function(a, b) {
         return new Date(b.date) - new Date(a.date);
     });
 
@@ -202,189 +216,70 @@ function afficherHistorique() {
     html += '<th>Aliments</th>';
     html += '<th>Sport(s)</th>';
     html += '<th>Symptômes</th>';
-    html += '<th>Actions</th>';
     html += '</tr></thead>';
     html += '<tbody>';
 
-    journeesTriees.forEach(function(journee) {
-        // Utiliser l'ID unique (vérifier s'il existe)
-        const journeeId = journee.id || 0;
-        
-        // Classe CSS selon les symptômes
+    journees.forEach(function(journee, index) {
         let classeSymptome = 'symptome-' + journee.symptomes;
-
-        // Formater les sports
         let sportsTexte = journee.sports.join(', ');
-
-        // Formater la date
         let dateFormatee = new Date(journee.date + 'T00:00:00').toLocaleDateString('fr-FR');
 
-        // Formater les aliments
-        let alimentstTexte = '';
-        if (journee.aliments) {
-            const categories = [];
-            if (journee.aliments.feculents.length) categories.push('🌾 ' + journee.aliments.feculents.join(', '));
-            if (journee.aliments.proteines.length) categories.push('🥩 ' + journee.aliments.proteines.join(', '));
-            if (journee.aliments.legumes.length) categories.push('🥬 ' + journee.aliments.legumes.join(', '));
-            if (journee.aliments.fruits.length) categories.push('🍎 ' + journee.aliments.fruits.join(', '));
-            if (journee.aliments.laitiers.length) categories.push('🥛 ' + journee.aliments.laitiers.join(', '));
-            if (journee.aliments.lipides.length) categories.push('🥑 ' + journee.aliments.lipides.join(', '));
-            if (journee.aliments.boissons.length) categories.push('☕ ' + journee.aliments.boissons.join(', '));
-            if (journee.aliments.autres.length) categories.push('🍯 ' + journee.aliments.autres.join(', '));
-            alimentsTexte = categories.join('<br>');
-        }
-        else if (journee.repas) {
-            // Ancien format
-            alimentstTexte = journee.repas;
-        }
-
-        // Texte des symptômes
         let symptomeTexte = journee.symptomes;
         if (journee.symptomes === 'aucun') symptomeTexte = '🟢 Aucun';
         if (journee.symptomes === 'leger') symptomeTexte = '🟠 Léger';
         if (journee.symptomes === 'important') symptomeTexte = '🔴 Important';
 
+        // Formater les aliments par catégorie
+        let alimentsHTML = '<div class="colonneAliments">';
+        if (journee.aliments.feculents) alimentsHTML += '🌾 ' + journee.aliments.feculents + '<br>';
+        if (journee.aliments.proteines) alimentsHTML += '🥩 ' + journee.aliments.proteines + '<br>';
+        if (journee.aliments.legumes) alimentsHTML += '🥬 ' + journee.aliments.legumes + '<br>';
+        if (journee.aliments.fruits) alimentsHTML += '🍎 ' + journee.aliments.fruits + '<br>';
+        if (journee.aliments.laitiers) alimentsHTML += '🥛 ' + journee.aliments.laitiers + '<br>';
+        if (journee.aliments.lipides) alimentsHTML += '🥑 ' + journee.aliments.lipides + '<br>';
+        if (journee.aliments.boissons) alimentsHTML += '☕ ' + journee.aliments.boissons + '<br>';
+        if (journee.aliments.autres) alimentsHTML += '🍯 ' + journee.aliments.autres;
+        alimentsHTML += '</div>';
+
         html += '<tr>';
         html += '<td>' + dateFormatee + '</td>';
-        html += '<td>' + alimentstTexte + '</td>';
+        html += '<td>' + alimentsHTML + '</td>';
         html += '<td>' + sportsTexte + '</td>';
         html += '<td class="' + classeSymptome + '">' + symptomeTexte + '</td>';
-        html += '<td class="celluleActions">';
-        html += '<button class="boutonModifier" data-id="' + journeeId + '">✏️ Modifier</button>';
-        html += '<button class="boutonSupprimer" data-id="' + journeeId + '">🗑️ Supprimer</button>';
-        html += '</td>';
         html += '</tr>';
     });
 
     html += '</tbody></table>';
     listeJournees.innerHTML = html;
+}
+
+// AFFICHAGE GRAPHIQUES
+
+let graphiqueSymptomes = null;
+let graphiqueTopAliments = null;
+let graphiqueCategories = null;
+
+function afficherGraphiques() {
+    const journees = getJournees();
     
-    const boutonsSupprimer = document.querySelectorAll('.boutonSupprimer');
-    boutonsSupprimer.forEach(function(bouton) {
-        bouton.addEventListener('click', function() {
-            const id = parseFloat(this.getAttribute('data-id'));
-            supprimerJournee(id);
-        });
-    });
-
-    const boutonsModifier = document.querySelectorAll('.boutonsModifier');
-    boutonsModifier.forEach(function(bouton) {
-        bouton.addEventListener('click', function() {
-            const id = parseFloat(this.getAttribute('data-id'));
-            modifierJourneeerJournee(id);
-        });
-    });
-}
-
-// Fonction pour supprimer une journée
-function supprimerJournee(id) {
-    // Récupérer toutes les journées
-    const journees = getJournees();
-    // Trouver l'index par l'ID
-    const index = journees.findIndex(function(j) {
-        return j.id === id;
-    });
-
-    if (index !== -1) {
-        // Demander confirmation avant de supprimer
-        if (confirm("Voulez-vous vraiment supprimer cette journée ?")) {
-            // Supprimer la journée à l'index trouvé
-            journees.splice(index, 1);
-
-            // Sauvegarder le nouveau tableau dans LocalStorage
-            localStorage.setItem('journees', JSON.stringify(journees));
-
-            // Rafraîchir l'affichage
-            afficherHistorique();
-            afficherGraphique();
-
-            alert("Journée supprimée avec succès !");
-        }
-    } else {
-        alert("Erreur : journée introuvable");
-    }
-}
-
-// Fonction pour modifier une journée
-function modifierJournee(id) {
-    
-    // Récupérer toutes les journées
-    const journees = getJournees();
-
-    // Trouver la journée par l'ID
-    const index = journees.findIndex(function(j) {
-        return j.id === id;
-    });
-
-    if (index === -1) {
-        alert("Erreur : journée introuvable");
-        return;
-    }
-
-    // Récupérer la journée à modifier
-    const journee = journees[index];
-
-    // Stocker l'index pour savoir qu'on modifie
-    indexEnCoursDeModification = index;
-
-    // Pré-remplir le formulaire 
-    document.getElementById('date').value = journee.date;
-    document.getElementById('symptomes').value = journee.symptomes;
-
-    // Pré-remplir les aliments
-    if (journee.aliments) {
-        document.getElementById('feculents').value = journee.aliments.feculents.join(', ');
-        document.getElementById('proteines').value = journee.aliments.proteines.join(', ');
-        document.getElementById('legumes').value = journee.aliments.legumes.join(', ');
-        document.getElementById('fruits').value = journee.aliments.fruits.join(', ');
-        document.getElementById('laitiers').value = journee.aliments.laitiers.join(', ');
-        document.getElementById('lipides').value = journee.aliments.lipides.join(', ');
-        document.getElementById('boissons').value = journee.aliments.boissons.join(', ');
-        document.getElementById('autres').value = journee.aliments.autres.join(', ');
-    }
-    else if (journee.repas){
-        // Ancien format - mettre dans "Autres"
-        documents.getElementById('autres').value = journee.repas;
-    }
-
-    // Pré-remplir les sports
-    const toutesCheckboxes = document.querySelectorAll('input[name="sport"]');
-    toutesCheckboxes.forEach(function(checkbox) {
-        checkbox.checked = false;
-    });
-
-    journee.sports.forEach(function(sport) {
-        const checkbox = document.querySelector('input[name="sport"][value="' + sport + '"]');
-        if (checkbox) {
-            checkbox.checked = true;
-        }
-    });
-
-    // Ouvrir l'overlay avec le formulaire
-    ouvrirOverlay();
-
-    alert("Vous pouvez maintenant modifier les données ci-dessus.\nCliquez sur 'Enregistrer' quand vous avez fini.");
-}
-
-let monGraphique = null; // Variable locale pour stocker le graphique
-
-function afficherGraphique() {
-    const journees = getJournees();
-    const canvas = document.getElementById('graphiqueSymptomes');
-    const conteneur = document.getElementById('conteneurGraphique');
-
-    // Si pas de données, affiche un message
     if (journees.length === 0) {
-        conteneur.innerHTML = '<h3 class="titreGraphique">Répartition des symptômes</h3><p>Aucune donnée à afficher. Enregistrez votre première journée !</p>';
+        document.getElementById('conteneurGraphique').innerHTML = '<p class="messagePasDeDonnees">Aucune donnée à afficher. Enregistrez votre première journée !</p>';
+        document.getElementById('conteneurTopAliments').innerHTML = '<h3 class="titreGraphique">🚨 Top 10 des aliments à risque</h3><p class="messagePasDeDonnees">Aucune donnée disponible</p>';
+        document.getElementById('conteneurCategories').innerHTML = '<h3 class="titreGraphique">📂 Symptômes par catégorie</h3><p class="messagePasDeDonnees">Aucune donnée disponible</p>';
         return;
     }
 
-    // S'assurer que le canvas existe
-    if (!canvas) {
-        conteneur.innerHTML = '<canvas id="graphiqueSymptomes"></canvas>';
-    }
+    // GRAPHIQUE 1 : Répartition des symptômes
+    afficherGraphiqueSymptomes(journees);
+    
+    // GRAPHIQUE 2 : Top aliments à risque
+    afficherGraphiqueTopAliments(journees);
+    
+    // GRAPHIQUE 3 : Symptômes par catégorie
+    afficherGraphiqueCategories(journees);
+}
 
-    // Compter les symptômes
+function afficherGraphiqueSymptomes(journees) {
     let aucun = 0;
     let leger = 0;
     let important = 0;
@@ -395,30 +290,20 @@ function afficherGraphique() {
         if (journee.symptomes === 'important') important++;
     });
 
-    // Détruire l'ancien graphique s'il existe
-    if (monGraphique) {
-        monGraphique.destroy();
+    if (graphiqueSymptomes) {
+        graphiqueSymptomes.destroy();
     }
 
-    // Créer le nouveau graphique
     const ctx = document.getElementById('graphiqueSymptomes').getContext('2d');
-    monGraphique = new Chart(ctx, {
+    graphiqueSymptomes = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: ['🟢 Aucun', '🟠 Léger', '🔴 Important'],
             datasets: [{
                 label: 'Nombre de jours',
                 data: [aucun, leger, important],
-                backgroundColor: [
-                    '#4CAF50',
-                    '#FF9800',
-                    '#F44336'
-                ],
-                borderColor: [
-                    '#388E3C',
-                    '#F57C00',
-                    '#D32F2F'
-                ],
+                backgroundColor: ['#4CAF50', '#FF9800', '#F44336'],
+                borderColor: ['#388E3C', '#F57C00', '#D32F2F'],
                 borderWidth: 2
             }]
         },
@@ -428,20 +313,123 @@ function afficherGraphique() {
             scales: {
                 y: {
                     beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'Répartition des symptômes digestifs',
+                    font: { size: 16 }
+                }
+            }
+        }
+    });
+}
+
+function afficherGraphiqueTopAliments(journees) {
+    // Compter les occurrences d'aliments avec et sans symptômes
+    const compteurAliments = {};
+
+    journees.forEach(function(journee) {
+        const avecSymptomes = journee.symptomes !== 'aucun';
+        
+        // Parcourir toutes les catégories d'aliments
+        Object.keys(journee.aliments).forEach(function(categorie) {
+            const alimentsTexte = journee.aliments[categorie];
+            if (alimentsTexte) {
+                // Séparer les aliments par virgule ou "+"
+                const alimentsSepares = alimentsTexte.split(/[,+]/).map(a => a.trim().toLowerCase());
+                
+                alimentsSepares.forEach(function(aliment) {
+                    if (aliment) {
+                        if (!compteurAliments[aliment]) {
+                            compteurAliments[aliment] = { total: 0, symptomes: 0 };
+                        }
+                        compteurAliments[aliment].total++;
+                        if (avecSymptomes) {
+                            compteurAliments[aliment].symptomes++;
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    // Calculer le pourcentage de risque et trier
+    const alimentsAvecRisque = [];
+    Object.keys(compteurAliments).forEach(function(aliment) {
+        const data = compteurAliments[aliment];
+        if (data.total >= 2) { // Au moins 2 occurrences
+            const pourcentage = (data.symptomes / data.total) * 100;
+            alimentsAvecRisque.push({
+                nom: aliment,
+                pourcentage: pourcentage,
+                occurrences: data.total
+            });
+        }
+    });
+
+    // Trier par pourcentage décroissant et prendre le top 10
+    alimentsAvecRisque.sort((a, b) => b.pourcentage - a.pourcentage);
+    const top10 = alimentsAvecRisque.slice(0, 10);
+
+    if (top10.length === 0) {
+        document.getElementById('conteneurTopAliments').innerHTML = '<h3 class="titreGraphique">🚨 Top 10 des aliments à risque</h3><p class="messagePasDeDonnees">Pas assez de données (minimum 2 occurrences par aliment)</p>';
+        return;
+    }
+
+    // Créer le graphique
+    if (graphiqueTopAliments) {
+        graphiqueTopAliments.destroy();
+    }
+
+    // Couleurs selon le niveau de risque
+    const couleurs = top10.map(function(item) {
+        if (item.pourcentage > 75) return '#F44336'; // Rouge
+        if (item.pourcentage > 50) return '#FF9800'; // Orange
+        return '#FFC107'; // Jaune
+    });
+
+    const ctx = document.getElementById('graphiqueTopAliments').getContext('2d');
+    graphiqueTopAliments = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: top10.map(item => item.nom),
+            datasets: [{
+                label: 'Risque de symptômes (%)',
+                data: top10.map(item => item.pourcentage),
+                backgroundColor: couleurs,
+                borderColor: couleurs.map(c => c === '#F44336' ? '#D32F2F' : c === '#FF9800' ? '#F57C00' : '#FFA000'),
+                borderWidth: 2
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    max: 100,
                     ticks: {
-                        stepSize: 1
+                        callback: function(value) { return value + '%'; }
                     }
                 }
             },
             plugins: {
-                legend: {
-                    display: false
-                },
+                legend: { display: false },
                 title: {
                     display: true,
-                    text: 'Répartition des symptômes digestifs',
-                    font: {
-                        size: 16
+                    text: 'Aliments les plus fréquemment associés aux symptômes',
+                    font: { size: 14 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const item = top10[context.dataIndex];
+                            return item.pourcentage.toFixed(1) + '% de risque (' + item.occurrences + ' fois consommé)';
+                        }
                     }
                 }
             }
@@ -449,91 +437,255 @@ function afficherGraphique() {
     });
 }
 
-afficherHistorique();
-afficherGraphique();
+function afficherGraphiqueCategories(journees) {
+    // Compter les symptômes par catégorie d'aliments
+    const categoriesStats = {
+        feculents: { total: 0, symptomes: 0 },
+        proteines: { total: 0, symptomes: 0 },
+        legumes: { total: 0, symptomes: 0 },
+        fruits: { total: 0, symptomes: 0 },
+        laitiers: { total: 0, symptomes: 0 },
+        lipides: { total: 0, symptomes: 0 },
+        boissons: { total: 0, symptomes: 0 },
+        autres: { total: 0, symptomes: 0 }
+    };
 
-// Bouton d'export CSV
+    journees.forEach(function(journee) {
+        const avecSymptomes = journee.symptomes !== 'aucun';
+        
+        Object.keys(journee.aliments).forEach(function(categorie) {
+            if (journee.aliments[categorie]) {
+                categoriesStats[categorie].total++;
+                if (avecSymptomes) {
+                    categoriesStats[categorie].symptomes++;
+                }
+            }
+        });
+    });
+
+    // Calculer les pourcentages et préparer les données
+    const labels = [];
+    const data = [];
+    const couleurs = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'];
+    const couleursFinales = [];
+
+    let index = 0;
+    Object.keys(categoriesStats).forEach(function(categorie) {
+        const stats = categoriesStats[categorie];
+        if (stats.total > 0) {
+            const pourcentage = (stats.symptomes / stats.total) * 100;
+            const nomCategorie = {
+                feculents: '🌾 Féculents',
+                proteines: '🥩 Protéines',
+                legumes: '🥬 Légumes',
+                fruits: '🍎 Fruits',
+                laitiers: '🥛 Laitiers',
+                lipides: '🥑 Lipides',
+                boissons: '☕ Boissons',
+                autres: '🍯 Autres'
+            }[categorie];
+            
+            labels.push(nomCategorie);
+            data.push(pourcentage);
+            couleursFinales.push(couleurs[index % couleurs.length]);
+            index++;
+        }
+    });
+
+    if (labels.length === 0) {
+        document.getElementById('conteneurCategories').innerHTML = '<h3 class="titreGraphique">📂 Symptômes par catégorie</h3><p class="messagePasDeDonnees">Aucune donnée disponible</p>';
+        return;
+    }
+
+    if (graphiqueCategories) {
+        graphiqueCategories.destroy();
+    }
+
+    const ctx = document.getElementById('graphiqueCategories').getContext('2d');
+    graphiqueCategories = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: couleursFinales,
+                borderColor: '#fff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right'
+                },
+                title: {
+                    display: true,
+                    text: 'Pourcentage de symptômes par catégorie d\'aliments',
+                    font: { size: 14 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed.toFixed(1) + '% de symptômes';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// ANALYSE INTELLIGENTE
+
+function afficherAnalyseIntelligente() {
+    const journees = getJournees();
+    const conteneur = document.getElementById('conteneurAnalyse');
+
+    if (journees.length === 0) {
+        conteneur.innerHTML = '<p class="messageAnalyseVide">Pas encore assez de données pour générer une analyse.</p>';
+        return;
+    }
+
+    // Analyser les aliments
+    const compteurAliments = {};
+    journees.forEach(function(journee) {
+        const avecSymptomes = journee.symptomes !== 'aucun';
+        
+        Object.keys(journee.aliments).forEach(function(categorie) {
+            const alimentsTexte = journee.aliments[categorie];
+            if (alimentsTexte) {
+                const alimentsSepares = alimentsTexte.split(/[,+]/).map(a => a.trim().toLowerCase());
+                
+                alimentsSepares.forEach(function(aliment) {
+                    if (aliment) {
+                        if (!compteurAliments[aliment]) {
+                            compteurAliments[aliment] = { total: 0, symptomes: 0 };
+                        }
+                        compteurAliments[aliment].total++;
+                        if (avecSymptomes) {
+                            compteurAliments[aliment].symptomes++;
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    // Identifier aliments à risque et aliments sûrs
+    const alimentsRisque = [];
+    const alimentsSurs = [];
+
+    Object.keys(compteurAliments).forEach(function(aliment) {
+        const data = compteurAliments[aliment];
+        if (data.total >= 2) {
+            const pourcentage = (data.symptomes / data.total) * 100;
+            
+            if (pourcentage > 60) {
+                alimentsRisque.push({
+                    nom: aliment,
+                    pourcentage: pourcentage,
+                    occurrences: data.total
+                });
+            } else if (pourcentage === 0) {
+                alimentsSurs.push({
+                    nom: aliment,
+                    occurrences: data.total
+                });
+            }
+        }
+    });
+
+    // Trier
+    alimentsRisque.sort((a, b) => b.pourcentage - a.pourcentage);
+    alimentsSurs.sort((a, b) => b.occurrences - a.occurrences);
+
+    // Générer le HTML
+    let html = '';
+
+    if (alimentsRisque.length > 0) {
+        html += '<div class="analyseSection analyseSectionRisque">';
+        html += '<h4>🚨 Aliments suspects (>60% de symptômes)</h4>';
+        html += '<ul>';
+        alimentsRisque.forEach(function(item) {
+            html += '<li><strong>' + item.nom + '</strong> : ' + item.pourcentage.toFixed(0) + '% de symptômes (' + item.occurrences + ' fois)</li>';
+        });
+        html += '</ul>';
+        html += '</div>';
+    }
+
+    if (alimentsSurs.length > 0) {
+        html += '<div class="analyseSection analyseSectionSur">';
+        html += '<h4>✅ Aliments bien tolérés (0% de symptômes)</h4>';
+        html += '<ul>';
+        alimentsSurs.slice(0, 10).forEach(function(item) {
+            html += '<li><strong>' + item.nom + '</strong> (' + item.occurrences + ' fois sans problème)</li>';
+        });
+        html += '</ul>';
+        html += '</div>';
+    }
+
+    if (html === '') {
+        html = '<p class="messageAnalyseVide">Continuez à enregistrer vos journées pour obtenir une analyse détaillée.</p>';
+    }
+
+    conteneur.innerHTML = html;
+}
+
+// INITIALISATION
+
+afficherHistorique();
+afficherGraphiques();
+afficherAnalyseIntelligente();
+
+// BOUTON D'EXPORT CSV
+
 const boutonExportCSV = document.querySelector(".boutonExportCSV");
 
-if(boutonExportCSV) {
+if (boutonExportCSV) {
     boutonExportCSV.addEventListener('click', function () {
         const journees = getJournees();
-
+        
         if (journees.length === 0) {
-            alert("Aucune donnée à exporter");
+            alert("⚠️ Aucune donnée à exporter");
             return;
         }
-
-        // Créer le CSV
-        let csv = 'Date,Repas,Sports,Symptômes\n';
-
+        
+        // Créer le contenu CSV
+        let csv = 'Date,Féculents,Protéines,Légumes,Fruits,Laitiers,Lipides,Boissons,Autres,Sports,Symptômes\n';
+        
         journees.forEach(function(journee) {
-            // Formater la date
             const dateFormatee = new Date(journee.date + 'T00:00:00').toLocaleDateString('fr-FR');
-
-            // Formater les sports
             const sports = journee.sports.join(' + ');
-
-            // Formater les symptômes
+            
             let symptomes = journee.symptomes;
             if (journee.symptomes === 'aucun') symptomes = 'Aucun';
             if (journee.symptomes === 'leger') symptomes = 'Léger';
             if (journee.symptomes === 'important') symptomes = 'Important';
-
-            csv += dateFormatee + ',"' + journee.repas + '",' + sports + ',' + symptomes + '\n';
+            
+            csv += dateFormatee + ',';
+            csv += '"' + (journee.aliments.feculents || '') + '",';
+            csv += '"' + (journee.aliments.proteines || '') + '",';
+            csv += '"' + (journee.aliments.legumes || '') + '",';
+            csv += '"' + (journee.aliments.fruits || '') + '",';
+            csv += '"' + (journee.aliments.laitiers || '') + '",';
+            csv += '"' + (journee.aliments.lipides || '') + '",';
+            csv += '"' + (journee.aliments.boissons || '') + '",';
+            csv += '"' + (journee.aliments.autres || '') + '",';
+            csv += sports + ',';
+            csv += symptomes + '\n';
         });
         
-        // Télécharger le fichier
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;'});
+        // Créer le fichier et le télécharger
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const url = window.URL.createObjectURL(blob);
         const lien = document.createElement('a');
         lien.href = url;
-        lien.download = 'digesTrack-export.csv';
+        lien.download = 'digesttrack-export.csv';
         lien.click();
-
-        alert("Export CSV réussi !");
+        
+        window.URL.revokeObjectURL(url);
+        
+        alert("✅ Export CSV réussi ! Le fichier a été téléchargé.");
     });
 }
-
-// Gestion de l'overlay du formulaire
-// Récupérer les éléments
-const boutonOuvrirFormulaire = document.getElementById('boutonOuvrirFormulaire');
-const boutonFermerFormulaire = document.getElementById('boutonFermerFormulaire');
-const overlayFormulaire = document.getElementById('overlayFormulaire');
-
-// Fonction pour ouvrir l'overlay
-function ouvrirOverlay() {
-    overlayFormulaire.classList.add('active');
-    document.body.style.overflow = 'hidden'; // Empêcher le scroll de la page
-}
-
-// Fonction pour fermer l'overlay
-function fermerOverlay() {
-    overlayFormulaire.classList.remove('active');
-    document.body.style.overflow = ''; // Réactiver le scroll
-
-    // Réinitialiser le formulaire et le mode de modification
-    formulaire.reset();
-    champDate.valueAsDate = new Date();
-    indexEnCoursDeModification = null;
-}
-
-// Ouvrir l'overlay au clic sur le bouton
-boutonOuvrirFormulaire.addEventListener('click', ouvrirOverlay);
-
-// Fermer l'overlay au clic sur le bouton X
-boutonFermerFormulaire.addEventListener('click', fermerOverlay);
-
-// Fermer l'overlay si on clique en dehors
-overlayFormulaire.addEventListener('click', function(e) {
-    if (e.target === overlayFormulaire) {
-        fermerOverlay();
-    }
-});
-
-// Fermer l'overlay avec la touche Echap
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && overlayFormulaire.classList.contains('active')) {
-        fermerOverlay();
-    }
-});

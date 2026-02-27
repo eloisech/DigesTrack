@@ -88,7 +88,7 @@ textarea {
     right: 2rem;
     width: 60px;
     height: 60px;
-    background-color: white;
+    background-color: #4A90E2;
     color: white;
     border: none;
     border-radius: 50%;
@@ -185,7 +185,7 @@ textarea {
     color: #4A90E2;
 }
 
-.sousTitreForumlaire {
+.sousTitreFormulaire {
     color: #4A90E2;
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
@@ -256,10 +256,58 @@ select {
     padding: 1rem;
 }
 
+.messagePasDeDonnees {
+    text-align: left;
+    color: #666;
+    font-style: italic;
+    padding: 1rem 0;
+}
+
+.conteneurGraphiqueIndividuel {
+    margin-bottom: 3rem;
+}
+
 .titreGraphique {
     color: #4A90E2;
     font-size: 1.1rem;
     margin-bottom: 1rem;
+}
+
+#analyseIntelligente {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid #4A90E2;
+}
+
+#analyseIntelligente .titreGraphique {
+    margin-top: 0;
+}
+
+/* Style pour l'analyse intelligente */
+.analyseSection {
+    margin-bottom: 1.5rem;
+}
+
+.analyseSection h4 {
+    color: #F44336;
+}
+
+.analyseSectionRisque h4 {
+    color: #F44336;
+}
+
+.analyseSectionSur h4 {
+    color: #4CAF50;
+}
+
+.analyseSection ul {
+    margin: 0.5rem 0;
+}
+
+.messageAnalyseVide {
+    color: #666;
+    font-style: italic;
 }
 
 /* Tableau historique */
@@ -294,6 +342,12 @@ select {
 
 .tableHistorique td {
     padding: 1rem;
+}
+
+.tableHistorique .colonneAliments {
+    max-width: 300px;
+    font-size: 0.9rem;
+    line-height: 1.5;
 }
 
 /* Code couleur symptômes */
