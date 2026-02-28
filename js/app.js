@@ -1,6 +1,8 @@
 console.log("JavaScript chargé !");
 
-// CONFIGURATION INITIALE 
+// ========================================
+// CONFIGURATION INITIALE (AU CHARGEMENT)
+// ========================================
 
 // Définir la date maximale à aujourd'hui
 const champDate = document.getElementById('date');
@@ -37,7 +39,9 @@ overlayFormulaire.addEventListener('click', function(e) {
     }
 });
 
+// ========================================
 // COMPORTEMENT DES CHECKBOXES
+// ========================================
 
 // Si on coche "Aucun", décocher les autres cases
 checkboxAucun.addEventListener('change', function() {
@@ -57,7 +61,9 @@ autresCheckboxes.forEach(function (checkbox) {
     });
 });
 
+// ========================================
 // SOUMISSION DU FORMULAIRE
+// ========================================
 
 formulaire.addEventListener('submit', function(e) {
     e.preventDefault(); // Empêche le rechargement de la page
@@ -75,7 +81,7 @@ formulaire.addEventListener('submit', function(e) {
     const laitiers = document.getElementById('laitiers').value.trim();
     const lipides = document.getElementById('lipides').value.trim();
     const boissons = document.getElementById('boissons').value.trim();
-    const autres = document.getElementById('Autres').value.trim();
+    const autres = document.getElementById('autres').value.trim();
 
     // Récupérer les sports cochés
     const checkboxesCochees = document.querySelectorAll('input[name="sport"]:checked');
@@ -84,7 +90,9 @@ formulaire.addEventListener('submit', function(e) {
         sports.push(checkbox.value);
     });
 
+    // ========================================
     // VALIDATIONS
+    // ========================================
 
     // 1. Vérifier que la date n'est pas vide
     if (valeurDate.length === 0) {
@@ -93,11 +101,9 @@ formulaire.addEventListener('submit', function(e) {
     }
 
     // 2. Vérifier que la date n'est pas dans le futur
-    const dateSelectionnee = new Date(valeurDate);
-    const dateAujourdhui = new Date();
-    dateAujourdhui.setHours(0, 0, 0, 0); // Mettre l'heure à minuit
+    const aujourdHuiString = new Date().toISOString().split('T')[0];
 
-    if (dateSelectionnee > dateAujourdhui) {
+    if (valeurDate > aujourdHuiString) {
         alert("⚠️ Vous ne pouvez pas sélectionner une date dans le futur");
         return;
     }
@@ -114,7 +120,9 @@ formulaire.addEventListener('submit', function(e) {
         return;
     }
 
+    // ========================================
     // SAUVEGARDE
+    // ========================================
 
     // Créer l'objet journée
     const journee = {
@@ -135,23 +143,29 @@ formulaire.addEventListener('submit', function(e) {
 
     // Sauvegarder dans LocalStorage
     saveJournee(journee);
-    afficherHistorique();
-    afficherGraphiques();
-    afficherAnalyseIntelligente();
-
-    console.log("✅ Journée sauvegardée :", journee);
-    alert("✅ Journée enregistrée avec succès !");
-
+    
+    // Fermer l'overlay IMMÉDIATEMENT
+    overlayFormulaire.classList.remove('active');
+    
     // Réinitialiser le formulaire
     formulaire.reset();
     // Remettre la date du jour après reset
     champDate.valueAsDate = new Date();
     
-    // Fermer l'overlay
-    overlayFormulaire.classList.remove('active');
+    // Afficher les mises à jour (après fermeture pour éviter les blocages)
+    setTimeout(function() {
+        afficherHistorique();
+        afficherGraphiques();
+        afficherAnalyseIntelligente();
+    }, 100);
+
+    console.log("✅ Journée sauvegardée :", journee);
+    alert("✅ Journée enregistrée avec succès !");
 });
 
+// ========================================
 // FONCTIONS LOCALSTORAGE
+// ========================================
 
 // Récupérer toutes les journées du LocalStorage
 function getJournees() {
@@ -193,7 +207,9 @@ function saveJournee(journee) {
     localStorage.setItem('journees', JSON.stringify(journees));
 }
 
+// ========================================
 // AFFICHAGE HISTORIQUE
+// ========================================
 
 function afficherHistorique() {
     const journees = getJournees();
@@ -253,7 +269,9 @@ function afficherHistorique() {
     listeJournees.innerHTML = html;
 }
 
+// ========================================
 // AFFICHAGE GRAPHIQUES
+// ========================================
 
 let graphiqueSymptomes = null;
 let graphiqueTopAliments = null;
@@ -263,11 +281,8 @@ function afficherGraphiques() {
     const journees = getJournees();
     
     if (journees.length === 0) {
-        document.getElementById('conteneurGraphique').innerHTML = '<p class="messagePasDeDonnees">Aucune donnée à afficher. Enregistrez votre première journée !</p>';
-        document.getElementById('conteneurTopAliments').innerHTML = '<h3 class="titreGraphique">🚨 Top 10 des aliments à risque</h3><p class="messagePasDeDonnees">Aucune donnée disponible</p>';
-        document.getElementById('conteneurCategories').innerHTML = '<h3 class="titreGraphique">📂 Symptômes par catégorie</h3><p class="messagePasDeDonnees">Aucune donnée disponible</p>';
-        return;
-    }
+    return;
+}
 
     // GRAPHIQUE 1 : Répartition des symptômes
     afficherGraphiqueSymptomes(journees);
@@ -536,11 +551,13 @@ function afficherGraphiqueCategories(journees) {
     });
 }
 
+// ========================================
 // ANALYSE INTELLIGENTE
+// ========================================
 
 function afficherAnalyseIntelligente() {
     const journees = getJournees();
-    const conteneur = document.getElementById('conteneurAnalyse');
+    const conteneur = document.getElementById('contenuAnalyse');
 
     if (journees.length === 0) {
         conteneur.innerHTML = '<p class="messageAnalyseVide">Pas encore assez de données pour générer une analyse.</p>';
@@ -632,13 +649,17 @@ function afficherAnalyseIntelligente() {
     conteneur.innerHTML = html;
 }
 
+// ========================================
 // INITIALISATION
+// ========================================
 
 afficherHistorique();
 afficherGraphiques();
 afficherAnalyseIntelligente();
 
+// ========================================
 // BOUTON D'EXPORT CSV
+// ========================================
 
 const boutonExportCSV = document.querySelector(".boutonExportCSV");
 
