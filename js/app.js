@@ -1,8 +1,6 @@
 console.log("JavaScript chargé !");
 
-// ========================================
 // CONFIGURATION INITIALE (AU CHARGEMENT)
-// ========================================
 
 // Définir la date maximale à aujourd'hui
 const champDate = document.getElementById('date');
@@ -39,9 +37,7 @@ overlayFormulaire.addEventListener('click', function(e) {
     }
 });
 
-// ========================================
 // COMPORTEMENT DES CHECKBOXES
-// ========================================
 
 // Si on coche "Aucun", décocher les autres cases
 checkboxAucun.addEventListener('change', function() {
@@ -61,9 +57,7 @@ autresCheckboxes.forEach(function (checkbox) {
     });
 });
 
-// ========================================
 // SOUMISSION DU FORMULAIRE
-// ========================================
 
 formulaire.addEventListener('submit', function(e) {
     e.preventDefault(); // Empêche le rechargement de la page
@@ -90,9 +84,7 @@ formulaire.addEventListener('submit', function(e) {
         sports.push(checkbox.value);
     });
 
-    // ========================================
     // VALIDATIONS
-    // ========================================
 
     // 1. Vérifier que la date n'est pas vide
     if (valeurDate.length === 0) {
@@ -120,9 +112,7 @@ formulaire.addEventListener('submit', function(e) {
         return;
     }
 
-    // ========================================
     // SAUVEGARDE
-    // ========================================
 
     // Créer l'objet journée
     const journee = {
@@ -144,7 +134,7 @@ formulaire.addEventListener('submit', function(e) {
     // Sauvegarder dans LocalStorage
     saveJournee(journee);
     
-    // Fermer l'overlay IMMÉDIATEMENT
+    // Fermer l'overlay 
     overlayFormulaire.classList.remove('active');
     
     // Réinitialiser le formulaire
@@ -163,9 +153,7 @@ formulaire.addEventListener('submit', function(e) {
     alert("✅ Journée enregistrée avec succès !");
 });
 
-// ========================================
 // FONCTIONS LOCALSTORAGE
-// ========================================
 
 // Récupérer toutes les journées du LocalStorage
 function getJournees() {
@@ -207,16 +195,14 @@ function saveJournee(journee) {
     localStorage.setItem('journees', JSON.stringify(journees));
 }
 
-// ========================================
 // AFFICHAGE HISTORIQUE
-// ========================================
 
 function afficherHistorique() {
     const journees = getJournees();
     const listeJournees = document.getElementById('listeJournees');
 
     if (journees.length === 0) {
-        listeJournees.innerHTML = '<p>Aucune journée enregistrée pour le moment.</p>';
+        listeJournees.innerHTML = '<p class="messagePasDeDonnees">Aucune journée enregistrée pour le moment.</p>';
         return;
     }
 
@@ -269,9 +255,7 @@ function afficherHistorique() {
     listeJournees.innerHTML = html;
 }
 
-// ========================================
 // AFFICHAGE GRAPHIQUES
-// ========================================
 
 let graphiqueSymptomes = null;
 let graphiqueTopAliments = null;
@@ -281,8 +265,11 @@ function afficherGraphiques() {
     const journees = getJournees();
     
     if (journees.length === 0) {
-    return;
-}
+        document.getElementById('conteneurGraphique').innerHTML = '<h3 class="titreGraphique">Répartition des symptômes</h3><p class="messagePasDeDonnees">Aucune donnée à afficher. Enregistrez votre première journée !</p>';
+        document.getElementById('conteneurTopAliments').innerHTML = '<h3 class="titreGraphique">🚨 Top 10 des aliments à risque</h3><p class="messagePasDeDonnees">Aucune donnée disponible</p>';
+        document.getElementById('conteneurCategories').innerHTML = '<h3 class="titreGraphique">📂 Symptômes par catégorie</h3><p class="messagePasDeDonnees">Aucune donnée disponible</p>';
+        return;
+    }
 
     // GRAPHIQUE 1 : Répartition des symptômes
     afficherGraphiqueSymptomes(journees);
@@ -453,6 +440,12 @@ function afficherGraphiqueTopAliments(journees) {
 }
 
 function afficherGraphiqueCategories(journees) {
+    // Minimum 2 journées pour un camembert significatif
+    if (journees.length < 2) {
+        document.getElementById('conteneurCategories').innerHTML = '<h3 class="titreGraphique">📂 Symptômes par catégorie</h3><p class="messagePasDeDonnees">Minimum 2 journées requises</p>';
+        return;
+    }
+
     // Compter les symptômes par catégorie d'aliments
     const categoriesStats = {
         feculents: { total: 0, symptomes: 0 },
@@ -551,9 +544,7 @@ function afficherGraphiqueCategories(journees) {
     });
 }
 
-// ========================================
 // ANALYSE INTELLIGENTE
-// ========================================
 
 function afficherAnalyseIntelligente() {
     const journees = getJournees();
@@ -649,17 +640,13 @@ function afficherAnalyseIntelligente() {
     conteneur.innerHTML = html;
 }
 
-// ========================================
 // INITIALISATION
-// ========================================
 
 afficherHistorique();
 afficherGraphiques();
 afficherAnalyseIntelligente();
 
-// ========================================
 // BOUTON D'EXPORT CSV
-// ========================================
 
 const boutonExportCSV = document.querySelector(".boutonExportCSV");
 
