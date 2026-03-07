@@ -132,7 +132,18 @@ formulaire.addEventListener('submit', function(e) {
     };
 
     // Sauvegarder dans LocalStorage
-    saveJournee(journee);
+    const indexModification = formulaire.dataset.indexModification;
+    if (indexModification !== undefined && indexModification !== '') {
+        // Mode modification : écraser l'entrée existante
+        const journees = getJournees();
+        journees.sort((a,b) => new Date(b.date) - new Date(a.date));
+        journees[indexModification] = journee;
+        localStorage.setItem('journees', JSON.stringify(journees));
+        formulaire.dataset.indexModification = '';
+    } else {
+        // Mode ajout normal
+        saveJournee(journee);
+    }
     
     // Fermer l'overlay 
     overlayFormulaire.classList.remove('active');
@@ -218,6 +229,7 @@ function afficherHistorique() {
     html += '<th>Aliments</th>';
     html += '<th>Sport(s)</th>';
     html += '<th>Symptômes</th>';
+    html += '<th>Actions</th>';
     html += '</tr></thead>';
     html += '<tbody>';
 
@@ -248,11 +260,50 @@ function afficherHistorique() {
         html += '<td>' + alimentsHTML + '</td>';
         html += '<td>' + sportsTexte + '</td>';
         html += '<td class="' + classeSymptome + '">' + symptomeTexte + '</td>';
+        html += '<td class="celluleActions">';
+        html += '<button class="boutonModifier" onclick="modifierJournee(' + index + ')">✏️ Modifier</button>';
+        html += '<button class="boutonSupprimer" onclick="supprimerJournee(' + index + ')">🗑️ Supprimer</button>';
+        html += '</td>';
         html += '</tr>';
     });
 
     html += '</tbody></table>';
     listeJournees.innerHTML = html;
+}
+
+function supprimerJournee(index) {
+    if (confirm("Êtes-vous sûr de vouloir supprimer cette journée ?")) {
+        const journees = getJournees();
+        journees.sort((a,b) => new Date(b.date) - new Date(a.date));
+        journees.splice(index, 1);
+        localStorage.setItem('journees', JSON.stringify(journees));
+        afficherHistorique();
+        afficherGraphiques();
+        afficherAnalyseIntelligente();
+    }
+}
+
+function modifierJournee(index) {
+    const journees = getJournees();
+    journees.sort((a,b) => new Date(b.date) - new Date(a.date));
+    const journee = journees[index];
+    document.getElementById('date').value = journee.date;
+    document.getElementById('feculents').value = journee.aliments.feculents || '';
+    document.getElementById('proteines').value = journee.aliments.proteines || '';
+    document.getElementById('legumes').value = journee.aliments.legumes || '';
+    document.getElementById('fruits').value = journee.aliments.fruits || '';
+    document.getElementById('laitiers').value = journee.aliments.laitiers || '';
+    document.getElementById('lipides').value = journee.aliments.lipides || '';
+    document.getElementById('boissons').value = journee.aliments.boissons || '';
+    document.getElementById('autres').value = journee.aliments.autres || '';
+    document.getElementById('symptomes').value = journee.symptomes || '';
+    document.querySelectorAll('input[name="sport"]').forEach(cb => cb.checked = false);
+    journee.sports.forEach(sport => {
+        const cb = document.querySelector('input[value="' + sport + '"]');
+        if (cb) cb.checked = true;
+    });
+    formulaire.dataset.indexModification = index; // Mémoriser l'index sans rien supprimer
+    overlayFormulaire.classList.add('active');
 }
 
 // AFFICHAGE GRAPHIQUES
