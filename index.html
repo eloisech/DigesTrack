@@ -21,18 +21,21 @@
             <!-- Graphique 1 : Répartition générale des symptômes -->
             <div id="conteneurGraphique" class="conteneurGraphiqueIndividuel">
                 <h3 class="titreGraphique">Répartition des symptômes digestifs</h3>
+                <p id="messageGraphique1" class="messagePasDeDonnees" style="display:none"></p>
                 <canvas id="graphiqueSymptomes"></canvas>
             </div>
 
             <!-- Graphique 2 : Top aliments à risque -->
             <div id="conteneurTopAliments" class="conteneurGraphiqueIndividuel">
                 <h3 class="titreGraphique">🚨 Top 10 des aliments à risque</h3>
+                <p id="messageGraphique2" class="messagePasDeDonnees" style="display:none"></p>
                 <canvas id="graphiqueTopAliments"></canvas>
             </div>
 
             <!-- Graphique 3 : Symptômes par catégorie d'aliments -->
             <div id="conteneurCategories" class="conteneurGraphiqueIndividuel">
                 <h3 class="titreGraphique">📂 Symptômes par catégorie</h3>
+                <p id="messageGraphique3" class="messagePasDeDonnees" style="display:none"></p>
                 <canvas id="graphiqueCategories"></canvas>
             </div>
 
@@ -47,7 +50,7 @@
         <section id="historique">
             <h2> 📜Historique </h2>
             <div id="listeJournees">
-                <p>Aucune journée enregistrée pour le moment.</p>
+            <p class="messagePasDeDonnees">Aucune journée enregistrée pour le moment.</p>
             </div>
 
             <button class="boutonExportCSV">📥 Exporter en CSV</button>
@@ -69,31 +72,103 @@
                 <label>Date :</label>
                 <input type="date" id="date" max="">
 
-                <h3 class="sousTitreFormulaire">🍽️ Aliments consommés</h3>
+                <h3 class="sousTitreFormulaire">Repas de la journée</h3>
 
-                <label>🌾 Féculents :</label>
-                <input type="text" id="feculents" placeholder="Ex: riz, pâtes, pain, pommes de terre">
+                <div class="checkboxGroup">
+                    <label class="checkboxLabel">
+                        <input type="radio" name="repas" value="petitDejeuner" id="repas-petitDejeuner">Petit-déjeuner
+                    </label>
+                    <label class="checkboxLabel">
+                        <input type="radio" name="repas" value="dejeuner" id="repas-dejeuner">Déjeuner
+                    </label>
+                    <label class="checkboxLabel">
+                        <input type="radio" name="repas" value="gouter" id="repas-gouter">Goûter
+                    </label>
+                    <label class="checkboxLabel">
+                        <input type="radio" name="repas" value="diner" id="repas-diner">Dîner
+                    </label>
+                </div>
 
-                <label>🥩 Protéines :</label>
-                <input type="text" id="proteines" placeholder="Ex: poulet, poisson, oeufs, tofu">
+                <!-- Blocs par repas -->
+                <div id="bloc-petitDejeuner" class="blocRepas" style="display:none">
+                    <h4 class="titreBlocRepas">Petit-déjeuner</h4>
+                    <label>🌾 Féculents :</label>
+                    <input type="text" id="petitDejeuner-feculents" placeholder="Ex: pain, céréales">
+                    <label>🥩 Protéines :</label>
+                    <input type="text" id="petitDejeuner-proteines" placeholder="Ex: oeufs, jambon">
+                    <label>🥬 Légumes :</label>
+                    <input type="text" id="petitDejeuner-legumes" placeholder="Ex: tomates, épinards">
+                    <label>🍎 Fruits :</label>
+                    <input type="text" id="petitDejeuner-fruits" placeholder="Ex: banane, orange">
+                    <label>🥛 Produits laitiers :</label>
+                    <input type="text" id="petitDejeuner-laitiers" placeholder="Ex: lait, yaourt">
+                    <label>🥑 Lipides :</label>
+                    <input type="text" id="petitDejeuner-lipides" placeholder="Ex: beurre, avocat">
+                    <label>☕ Boissons :</label>
+                    <input type="text" id="petitDejeuner-boissons" placeholder="Ex: café, thé, jus">
+                    <label>🍯 Autres :</label>
+                    <input type="text" id="petitDejeuner-autres" placeholder="Ex: confiture, miel">
+                </div>
 
-                <label>🥬 Légumes :</label>
-                <input type="text" id="legumes" placeholder="Ex: épinards, carottes, tomates">
+                <div id="bloc-dejeuner" class="blocRepas" style="display:none">
+                    <h4 class="titreBlocRepas">Déjeuner</h4>
+                    <label>🌾 Féculents :</label>
+                    <input type="text" id="dejeuner-feculents" placeholder="Ex: riz, pâtes, pain">
+                    <label>🥩 Protéines :</label>
+                    <input type="text" id="dejeuner-proteines" placeholder="Ex: poulet, poisson">
+                    <label>🥬 Légumes :</label>
+                    <input type="text" id="dejeuner-legumes" placeholder="Ex: carottes, brocolis">
+                    <label>🍎 Fruits :</label>
+                    <input type="text" id="dejeuner-fruits" placeholder="Ex: pomme, poire">
+                    <label>🥛 Produits laitiers :</label>
+                    <input type="text" id="dejeuner-laitiers" placeholder="Ex: yaourt, fromage">
+                    <label>🥑 Lipides :</label>
+                    <input type="text" id="dejeuner-lipides" placeholder="Ex: huile d'olive, noix">
+                    <label>☕ Boissons :</label>
+                    <input type="text" id="dejeuner-boissons" placeholder="Ex: eau, jus, café">
+                    <label>🍯 Autres :</label>
+                    <input type="text" id="dejeuner-autres" placeholder="Ex: sauce, condiments">
+                </div>
 
-                <label>🍎 Fruits :</label>
-                <input type="text" id="fruits" placeholder="Ex: pomme, banane, orange">
+                <div id="bloc-gouter" class="blocRepas" style="display:none">
+                    <h4 class="titreBlocRepas">Goûter</h4>
+                    <label>🌾 Féculents :</label>
+                    <input type="text" id="gouter-feculents" placeholder="Ex: pain, céréales, barre énergétique">
+                    <label>🥩 Protéines :</label>
+                    <input type="text" id="gouter-proteines" placeholder="Ex: oeufs, fromage blanc">
+                    <label>🥬 Légumes :</label>
+                    <input type="text" id="gouter-legumes" placeholder="Ex: crudités">
+                    <label>🍎 Fruits :</label>
+                    <input type="text" id="gouter-fruits" placeholder="Ex: banane, pomme">
+                    <label>🥛 Produits laitiers :</label>
+                    <input type="text" id="gouter-laitiers" placeholder="Ex: yaourt, lait">
+                    <label>🥑 Lipides :</label>
+                    <input type="text" id="gouter-lipides" placeholder="Ex: noix, beurre de cacahuète">
+                    <label>☕ Boissons :</label>
+                    <input type="text" id="gouter-boissons" placeholder="Ex: eau, jus, boisson isotonique">
+                    <label>🍯 Autres :</label>
+                    <input type="text" id="gouter-autres" placeholder="Ex: miel, gâteau">
+                </div>
 
-                <label>🥛 Produits laitiers :</label>
-                <input type="text" id="laitiers" placeholder="Ex: lait, yaourt, fromage">
-
-                <label>🥑 Lipides :</label>
-                <input type="text" id="lipides" placeholder="Ex: huile d'olive, beurre, avocat, noix">
-
-                <label>☕ Boissons :</label>
-                <input type="text" id="boissons" placeholder="Ex: eau, café, thé, jus d'orange, boisson isotonique">
-
-                <label>🍯 Autres :</label>
-                <input type="text" id="autres" placeholder="Ex: sauce, condiments, snacks">
+                <div id="bloc-diner" class="blocRepas" style="display:none">
+                    <h4 class="titreBlocRepas">Dîner</h4>
+                    <label>🌾 Féculents :</label>
+                    <input type="text" id="diner-feculents" placeholder="Ex: riz, pâtes, pommes de terre">
+                    <label>🥩 Protéines :</label>
+                    <input type="text" id="diner-proteines" placeholder="Ex: viande, poisson, tofu">
+                    <label>🥬 Légumes :</label>
+                    <input type="text" id="diner-legumes" placeholder="Ex: épinards, courgettes">
+                    <label>🍎 Fruits :</label>
+                    <input type="text" id="diner-fruits" placeholder="Ex: banane, pomme">
+                    <label>🥛 Produits laitiers :</label>
+                    <input type="text" id="diner-laitiers" placeholder="Ex: fromage, yaourt">
+                    <label>🥑 Lipides :</label>
+                    <input type="text" id="diner-lipides" placeholder="Ex: huile d'olive, beurre">
+                    <label>☕ Boissons :</label>
+                    <input type="text" id="diner-boissons" placeholder="Ex: eau, tisane">
+                    <label>🍯 Autres :</label>
+                    <input type="text" id="diner-autres" placeholder="Ex: chocolat noir, sauce">
+                </div>
 
                 <label class="labelSport">Sport(s) pratiqué(s) :</label>
                 <div class="checkboxGroup">

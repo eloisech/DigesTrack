@@ -20,6 +20,28 @@ const boutonOuvrirFormulaire = document.getElementById('boutonOuvrirFormulaire')
 const overlayFormulaire = document.getElementById('overlayFormulaire');
 const boutonFermerFormulaire = document.getElementById('boutonFermerFormulaire');
 
+function reinitialiserFormulaire(){
+    formulaire.reset();
+    champDate.valueAsDate = new Date();
+    repasTypes.forEach(function(type) {
+        document.getElementById('bloc-' + type).style.display = 'none';
+    });
+    formulaire.dataset.indexModification = '';
+}
+
+// Gestion de l'affichage des blocs repas
+const repasTypes = ['petitDejeuner', 'dejeuner', 'gouter', 'diner'];
+document.querySelectorAll('input[name="repas"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+        // Cachet tous les blocs
+        repasTypes.forEach(function(type) {
+            document.getElementById('bloc-' + type).style.display = 'none';
+        });
+        // Afficher uniquement celui sélectionné
+        document.getElementById('bloc-' + this.value).style.display = 'block';
+    });
+});
+
 // Ouvrir le formulaire
 boutonOuvrirFormulaire.addEventListener('click', function() {
     overlayFormulaire.classList.add('active');
@@ -28,12 +50,14 @@ boutonOuvrirFormulaire.addEventListener('click', function() {
 // Fermer le formulaire (bouton X)
 boutonFermerFormulaire.addEventListener('click', function() {
     overlayFormulaire.classList.remove('active');
+    reinitialiserFormulaire();
 });
 
 // Fermer le formulaire (clic sur l'overlay)
 overlayFormulaire.addEventListener('click', function(e) {
     if (e.target === overlayFormulaire) {
         overlayFormulaire.classList.remove('active');
+        reinitialiserFormulaire();
     }
 });
 
@@ -67,15 +91,23 @@ formulaire.addEventListener('submit', function(e) {
     const champSymptomes = document.getElementById('symptomes');
     const valeurSymptomes = champSymptomes.value;
 
-    // Récupérer les aliments par catégorie
-    const feculents = document.getElementById('feculents').value.trim();
-    const proteines = document.getElementById('proteines').value.trim();
-    const legumes = document.getElementById('legumes').value.trim();
-    const fruits = document.getElementById('fruits').value.trim();
-    const laitiers = document.getElementById('laitiers').value.trim();
-    const lipides = document.getElementById('lipides').value.trim();
-    const boissons = document.getElementById('boissons').value.trim();
-    const autres = document.getElementById('autres').value.trim();
+    // Récupérer les aliments par repas
+    const repas = {};
+    repasTypes.forEach(function(type) {
+        const checkbox = document.getElementById('repas-' + type)
+        if (checkbox && checkbox.checked) {
+            repas[type] = {
+                feculents: document.getElementById(type + '-feculents').value.trim(),
+                proteines: document.getElementById(type + '-proteines').value.trim(),
+                legumes:   document.getElementById(type + '-legumes').value.trim(),
+                fruits:    document.getElementById(type + '-fruits').value.trim(),
+                laitiers:  document.getElementById(type + '-laitiers').value.trim(),
+                lipides:   document.getElementById(type + '-lipides').value.trim(),
+                boissons:  document.getElementById(type + '-boissons').value.trim(),
+                autres:    document.getElementById(type + '-autres').value.trim()
+            };
+        }
+    });
 
     // Récupérer les sports cochés
     const checkboxesCochees = document.querySelectorAll('input[name="sport"]:checked');
@@ -100,13 +132,23 @@ formulaire.addEventListener('submit', function(e) {
         return;
     }
 
-    // 3. Vérifier qu'au moins une catégorie d'aliments est remplie
-    if (!feculents && !proteines && !legumes && !fruits && !laitiers && !lipides && !boissons && !autres) {
-        alert("⚠️ Veuillez renseigner au moins une catégorie d'aliments");
+    // 3. Vérifier qu'au moins un repas est coché
+    if (Object.keys(repas).length === 0) {
+        alert("⚠️ Veuillez cocher au moins un repas");
+        return;
+    }
+
+    // 4. Vérifier qu'au moins une catégorie d'aliment est remplie
+    let auMoinUnAliment = false;
+    Object.values(repas).forEach(function(r) {
+        if (Object.values(r).some(v => v !== '')) auMoinUnAliment = true;
+    });
+    if (!auMoinUnAliment) {
+        alert("⚠️ Veuillez renseigner au moins un aliment dans vos repas");
         return;
     }
     
-    // 4. Vérifier qu'au moins un sport est sélectionné
+    // 5. Vérifier qu'au moins un sport est sélectionné
     if (sports.length === 0) {
         alert("⚠️ Veuillez sélectionner au moins un sport ou 'Aucun'");
         return;
@@ -117,16 +159,7 @@ formulaire.addEventListener('submit', function(e) {
     // Créer l'objet journée
     const journee = {
         date: valeurDate,
-        aliments: {
-            feculents: feculents,
-            proteines: proteines,
-            legumes: legumes,
-            fruits: fruits,
-            laitiers: laitiers,
-            lipides: lipides,
-            boissons: boissons,
-            autres: autres
-        },
+        repas: repas,
         sports: sports,
         symptomes: valeurSymptomes
     };
@@ -144,12 +177,16 @@ formulaire.addEventListener('submit', function(e) {
         // Mode ajout normal
         saveJournee(journee);
     }
-    
-    // Fermer l'overlay 
+
     overlayFormulaire.classList.remove('active');
-    
+    reinitialiserFormulaire();
+
     // Réinitialiser le formulaire
     formulaire.reset();
+    // Masquer tous les blocs repas après enregistrement d'un repas
+    repasTypes.forEach(function(type) {
+        document.getElementById('bloc-' + type).style.display = 'none';
+    });
     // Remettre la date du jour après reset
     champDate.valueAsDate = new Date();
     
@@ -158,7 +195,7 @@ formulaire.addEventListener('submit', function(e) {
         afficherHistorique();
         afficherGraphiques();
         afficherAnalyseIntelligente();
-    }, 100);
+    }, 300);
 
     console.log("✅ Journée sauvegardée :", journee);
     alert("✅ Journée enregistrée avec succès !");
@@ -206,6 +243,22 @@ function saveJournee(journee) {
     localStorage.setItem('journees', JSON.stringify(journees));
 }
 
+// Aplatir tous les repas d'une journée en un objet aliment unique
+function getAlimentsJournee(journee) {
+    if (journee.aliments) return journee.aliments;
+    const aliments = {feculents: '', proteines: '', legumes: '', fruits: '', laitiers: '', lipides: '', boissons: '', autres: ''};
+    if (journee.repas) {
+        Object.values(journee.repas).forEach(function(repas) {
+            Object.keys(aliments).forEach(function(cat) {
+                if (repas[cat]) {
+                    aliments[cat] = aliments[cat] ? aliments[cat] + ', ' + repas[cat] : repas[cat];
+                }
+            });
+        });
+    }
+    return aliments;
+}
+
 // AFFICHAGE HISTORIQUE
 
 function afficherHistorique() {
@@ -235,7 +288,8 @@ function afficherHistorique() {
 
     journees.forEach(function(journee, index) {
         let classeSymptome = 'symptome-' + journee.symptomes;
-        let sportsTexte = journee.sports.join(', ');
+        const nomsSports = { natation: 'Natation', velo: 'Vélo', course: 'Course', aucun: 'Aucun'};
+        let sportsTexte = journee.sports.map(s => nomsSports[s] || s).join(', ');
         let dateFormatee = new Date(journee.date + 'T00:00:00').toLocaleDateString('fr-FR');
 
         let symptomeTexte = journee.symptomes;
@@ -243,16 +297,27 @@ function afficherHistorique() {
         if (journee.symptomes === 'leger') symptomeTexte = '🟠 Léger';
         if (journee.symptomes === 'important') symptomeTexte = '🔴 Important';
 
-        // Formater les aliments par catégorie
+        const aliments = getAlimentsJournee(journee);
         let alimentsHTML = '<div class="colonneAliments">';
-        if (journee.aliments.feculents) alimentsHTML += '🌾 ' + journee.aliments.feculents + '<br>';
-        if (journee.aliments.proteines) alimentsHTML += '🥩 ' + journee.aliments.proteines + '<br>';
-        if (journee.aliments.legumes) alimentsHTML += '🥬 ' + journee.aliments.legumes + '<br>';
-        if (journee.aliments.fruits) alimentsHTML += '🍎 ' + journee.aliments.fruits + '<br>';
-        if (journee.aliments.laitiers) alimentsHTML += '🥛 ' + journee.aliments.laitiers + '<br>';
-        if (journee.aliments.lipides) alimentsHTML += '🥑 ' + journee.aliments.lipides + '<br>';
-        if (journee.aliments.boissons) alimentsHTML += '☕ ' + journee.aliments.boissons + '<br>';
-        if (journee.aliments.autres) alimentsHTML += '🍯 ' + journee.aliments.autres;
+        if (journee.repas) {
+            const nomsRepas = {petitDejeuner: 'Petit-déjeuner', dejeuner: 'Déjeuner', gouter: 'Goûter', diner: 'Dîner'};
+            Object.keys(journee.repas).forEach(function(type) {
+                const r = journee.repas[type];
+                const lignes = Object.values(r).filter(v => v !== '').join(', ');
+                if (lignes) alimentsHTML += '<strong>' + nomsRepas[type] + '</strong> : ' + lignes + '<br>';
+            });
+        } else {
+            // Formater les aliments par catégorie
+            let alimentsHTML = '<div class="colonneAliments">';
+            if (journee.aliments.feculents) alimentsHTML += '🌾 ' + journee.aliments.feculents + '<br>';
+            if (journee.aliments.proteines) alimentsHTML += '🥩 ' + journee.aliments.proteines + '<br>';
+            if (journee.aliments.legumes) alimentsHTML += '🥬 ' + journee.aliments.legumes + '<br>';
+            if (journee.aliments.fruits) alimentsHTML += '🍎 ' + journee.aliments.fruits + '<br>';
+            if (journee.aliments.laitiers) alimentsHTML += '🥛 ' + journee.aliments.laitiers + '<br>';
+            if (journee.aliments.lipides) alimentsHTML += '🥑 ' + journee.aliments.lipides + '<br>';
+            if (journee.aliments.boissons) alimentsHTML += '☕ ' + journee.aliments.boissons + '<br>';
+            if (journee.aliments.autres) alimentsHTML += '🍯 ' + journee.aliments.autres;
+        }
         alimentsHTML += '</div>';
 
         html += '<tr>';
@@ -287,21 +352,39 @@ function modifierJournee(index) {
     const journees = getJournees();
     journees.sort((a,b) => new Date(b.date) - new Date(a.date));
     const journee = journees[index];
+    
     document.getElementById('date').value = journee.date;
-    document.getElementById('feculents').value = journee.aliments.feculents || '';
-    document.getElementById('proteines').value = journee.aliments.proteines || '';
-    document.getElementById('legumes').value = journee.aliments.legumes || '';
-    document.getElementById('fruits').value = journee.aliments.fruits || '';
-    document.getElementById('laitiers').value = journee.aliments.laitiers || '';
-    document.getElementById('lipides').value = journee.aliments.lipides || '';
-    document.getElementById('boissons').value = journee.aliments.boissons || '';
-    document.getElementById('autres').value = journee.aliments.autres || '';
     document.getElementById('symptomes').value = journee.symptomes || '';
+
+    // Réinitialiser les blocs repas
+    repasTypes.forEach(function(type) {
+        document.getElementById('bloc-' + type).style.display = 'none';
+        document.querySelector('input[name="repas"][value="' + type + '"]').checked = false;
+    });
+
+    // Pré-remplir avec le format repas
+    if (journee.repas) {
+        Object.keys(journee.repas).forEach(function(type) {
+            const radio = document.querySelector('input[name="repas"][value="' + type + '"]');
+            if (radio) {
+                radio.checked = true;
+                document.getElementById('bloc-' + type).style.display = 'block';
+            }
+            const r = journee.repas[type];
+            Object.keys(r).forEach(function(cat) {
+                const champ = document.getElementById(type + '-' + cat);
+                if (champ) champ.value = r[cat] || '';
+            });
+        });
+    }
+
+    // Sports
     document.querySelectorAll('input[name="sport"]').forEach(cb => cb.checked = false);
     journee.sports.forEach(sport => {
-        const cb = document.querySelector('input[value="' + sport + '"]');
+        const cb = document.querySelector('input[name="sport"][value="' + sport + '"]');
         if (cb) cb.checked = true;
     });
+
     formulaire.dataset.indexModification = index; // Mémoriser l'index sans rien supprimer
     overlayFormulaire.classList.add('active');
 }
@@ -316,11 +399,25 @@ function afficherGraphiques() {
     const journees = getJournees();
     
     if (journees.length === 0) {
-        document.getElementById('conteneurGraphique').innerHTML = '<h3 class="titreGraphique">Répartition des symptômes</h3><p class="messagePasDeDonnees">Aucune donnée à afficher. Enregistrez votre première journée !</p>';
-        document.getElementById('conteneurTopAliments').innerHTML = '<h3 class="titreGraphique">🚨 Top 10 des aliments à risque</h3><p class="messagePasDeDonnees">Aucune donnée disponible</p>';
-        document.getElementById('conteneurCategories').innerHTML = '<h3 class="titreGraphique">📂 Symptômes par catégorie</h3><p class="messagePasDeDonnees">Aucune donnée disponible</p>';
+        document.getElementById('messageGraphique1').textContent = 'Aucune donnée à afficher. Enregistrez votre première journée !';
+        document.getElementById('messageGraphique1').style.display = 'block';
+        document.getElementById('graphiqueSymptomes').style.display = 'none';
+        document.getElementById('messageGraphique2').textContent = 'Aucune donnée à afficher. Enregistrez votre première journée !';
+        document.getElementById('messageGraphique2').style.display = 'block';
+        document.getElementById('graphiqueTopAliments').style.display = 'none';
+        document.getElementById('messageGraphique3').textContent = 'Aucune donnée à afficher. Enregistrez votre première journée !';
+        document.getElementById('messageGraphique3').style.display = 'block';
+        document.getElementById('graphiqueCategories').style.display = 'none';
         return;
     }
+
+    // Masquer les messages et afficher les canvas
+    document.getElementById('messageGraphique1').style.display = 'none';
+    document.getElementById('graphiqueSymptomes').style.display = 'block';
+    document.getElementById('messageGraphique2').style.display = 'none';
+    document.getElementById('graphiqueTopAliments').style.display = 'block';
+    document.getElementById('messageGraphique3').style.display = 'none';
+    document.getElementById('graphiqueCategories').style.display = 'block';
 
     // GRAPHIQUE 1 : Répartition des symptômes
     afficherGraphiqueSymptomes(journees);
@@ -389,8 +486,10 @@ function afficherGraphiqueTopAliments(journees) {
         const avecSymptomes = journee.symptomes !== 'aucun';
         
         // Parcourir toutes les catégories d'aliments
-        Object.keys(journee.aliments).forEach(function(categorie) {
-            const alimentsTexte = journee.aliments[categorie];
+        const aliments = getAlimentsJournee(journee);
+        Object.keys(aliments).forEach(function(categorie) {
+            const alimentsTexte = aliments[categorie];
+    
             if (alimentsTexte) {
                 // Séparer les aliments par virgule ou "+"
                 const alimentsSepares = alimentsTexte.split(/[,+]/).map(a => a.trim().toLowerCase());
@@ -429,7 +528,9 @@ function afficherGraphiqueTopAliments(journees) {
     const top10 = alimentsAvecRisque.slice(0, 10);
 
     if (top10.length === 0) {
-        document.getElementById('conteneurTopAliments').innerHTML = '<h3 class="titreGraphique">🚨 Top 10 des aliments à risque</h3><p class="messagePasDeDonnees">Pas assez de données (minimum 2 occurrences par aliment)</p>';
+        document.getElementById('messageGraphique2').textContent = 'Pas assez de données (minimum 2 occurrences par aliment)';
+        document.getElementById('messageGraphique2').style.display = 'block';
+        document.getElementById('graphiqueTopAliments').style.display = 'none';
         return;
     }
 
@@ -493,7 +594,9 @@ function afficherGraphiqueTopAliments(journees) {
 function afficherGraphiqueCategories(journees) {
     // Minimum 2 journées pour un camembert significatif
     if (journees.length < 2) {
-        document.getElementById('conteneurCategories').innerHTML = '<h3 class="titreGraphique">📂 Symptômes par catégorie</h3><p class="messagePasDeDonnees">Minimum 2 journées requises</p>';
+        document.getElementById('messageGraphique3').textContent = 'Minimum 2 journées requises';
+        document.getElementById('messageGraphique3').style.display = 'block';
+        document.getElementById('graphiqueCategories').style.display = 'none';
         return;
     }
 
@@ -512,8 +615,9 @@ function afficherGraphiqueCategories(journees) {
     journees.forEach(function(journee) {
         const avecSymptomes = journee.symptomes !== 'aucun';
         
-        Object.keys(journee.aliments).forEach(function(categorie) {
-            if (journee.aliments[categorie]) {
+        const aliments = getAlimentsJournee(journee);
+        Object.keys(aliments).forEach(function(categorie) {
+            if (aliments[categorie]) {
                 categoriesStats[categorie].total++;
                 if (avecSymptomes) {
                     categoriesStats[categorie].symptomes++;
@@ -552,7 +656,9 @@ function afficherGraphiqueCategories(journees) {
     });
 
     if (labels.length === 0) {
-        document.getElementById('conteneurCategories').innerHTML = '<h3 class="titreGraphique">📂 Symptômes par catégorie</h3><p class="messagePasDeDonnees">Aucune donnée disponible</p>';
+        document.getElementById('messageGraphique3').textContent = 'Aucune donnée disponible';
+        document.getElementById('messageGraphique3').style.display = 'block';
+        document.getElementById('graphiqueCategories').style.display = 'none';
         return;
     }
 
@@ -611,8 +717,10 @@ function afficherAnalyseIntelligente() {
     journees.forEach(function(journee) {
         const avecSymptomes = journee.symptomes !== 'aucun';
         
-        Object.keys(journee.aliments).forEach(function(categorie) {
-            const alimentsTexte = journee.aliments[categorie];
+        const aliments = getAlimentsJournee(journee);
+        Object.keys(aliments).forEach(function(categorie) {
+            const alimentsTexte = aliments[categorie];
+        
             if (alimentsTexte) {
                 const alimentsSepares = alimentsTexte.split(/[,+]/).map(a => a.trim().toLowerCase());
                 

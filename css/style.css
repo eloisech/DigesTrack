@@ -51,7 +51,7 @@ label {
     font-weight: bold;
 }
 
-input {
+input[type="text"], input[type="date"] {
     padding: 0.5rem;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -186,7 +186,6 @@ textarea {
 }
 
 .sousTitreFormulaire {
-    color: #4A90E2;
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
     font-size: 1.1rem;
@@ -212,6 +211,33 @@ textarea {
     }
 }
 
+.blocRepas {
+    background: #f8f9fa;
+    border-left: 3px solid #4A90E2;
+    padding: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.blocRepas label {
+    font-weight: bold;
+    display: block;
+}
+
+.blocRepas input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.titreBlocRepas {
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+}
+
 /* Checkboxes */
 .checkboxGroup {
     display: flex;
@@ -227,7 +253,7 @@ textarea {
     color: #333;
 }
 
-.checkboxLabel input[type="checkbox"] {
+.checkboxLabel input[type="checkbox"], .checkboxLabel input[type="radio"] {
     width: auto;
     margin-right: 0.5rem;
     cursor: pointer;
