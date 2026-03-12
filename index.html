@@ -48,14 +48,58 @@
 
         <!-- 2ème section : Historique -->
         <section id="historique">
-            <h2> 📜Historique </h2>
+            <h2>📜 Historique</h2>
+
+            <div id="filtres">
+                <div class="filtresLigne">
+                    <div class="filtreGroupe">
+                        <label>Du :</label>
+                        <input type="date" id="filtreDateDebut">
+                    </div>
+                    <div class="filtreGroupe">
+                        <label>Au :</label>
+                        <input type="date" id="filtreDateFin">
+                    </div>
+                    <div class="filtreGroupe">
+                        <label>Repas :</label>
+                        <select id="filtreRepas">
+                            <option value="">Tous</option>
+                            <option value="petitDejeuner">Petit-déjeuner</option>
+                            <option value="dejeuner">Déjeuner</option>
+                            <option value="gouter">Goûter</option>
+                            <option value="diner">Dîner</option>
+                        </select>
+                    </div>
+                    <div class="filtreGroupe">
+                        <label>Sport :</label>
+                        <select id="filtreSport">
+                            <option value="">Tous</option>
+                            <option value="natation">Natation</option>
+                            <option value="velo">Vélo</option>
+                            <option value="course">Course</option>
+                            <option value="aucun">Aucun</option>
+                        </select>
+                    </div>
+                    <div class="filtreGroupe">
+                        <label>Symptômes :</label>
+                        <select id="filtreSymptomes">
+                            <option value="">Tous</option>
+                            <option value="aucun">Aucun</option>
+                            <option value="leger">Léger</option>
+                            <option value="important">Important</option>
+                        </select>
+                    </div>
+                    <button id="boutonReinitialiserfiltres" class="boutonReinitialiserFiltres">Réinitialiser</button>
+                </div>
+                <p id="compteurResultats" class="compteurResultats"></p>
+            </div>
+
             <div id="listeJournees">
-            <p class="messagePasDeDonnees">Aucune journée enregistrée pour le moment.</p>
+                <p class="messagePasDeDonnees">Aucune journée enregistrée pour le moment.</p>
             </div>
 
             <button class="boutonExportCSV">📥 Exporter en CSV</button>
         </section>
-
     </main>
 
     <!-- Bouton flottant pour ouvrir le formulaire -->

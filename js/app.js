@@ -5,6 +5,8 @@ console.log("JavaScript chargé !");
 // Définir la date maximale à aujourd'hui
 const champDate = document.getElementById('date');
 const aujourdhui = new Date().toISOString().split('T')[0];
+document.getElementById('filtreDateDebut').max = aujourdhui;
+document.getElementById('filtreDateFin').max = aujourdhui;
 champDate.max = aujourdhui;
 champDate.valueAsDate = new Date(); // Date du jour par défaut
 
@@ -191,11 +193,13 @@ formulaire.addEventListener('submit', function(e) {
     champDate.valueAsDate = new Date();
     
     // Afficher les mises à jour (après fermeture pour éviter les blocages)
+    afficherHistorique();
+    afficherAnalyseIntelligente();
+
     setTimeout(function() {
-        afficherHistorique();
         afficherGraphiques();
-        afficherAnalyseIntelligente();
-    }, 300);
+
+    }, 50);
 
     console.log("✅ Journée sauvegardée :", journee);
     alert("✅ Journée enregistrée avec succès !");
@@ -262,18 +266,31 @@ function getAlimentsJournee(journee) {
 // AFFICHAGE HISTORIQUE
 
 function afficherHistorique() {
-    const journees = getJournees();
+    const toutesJournees = getJournees();
     const listeJournees = document.getElementById('listeJournees');
+    const compteur = document.getElementById('compteurResultats');
 
-    if (journees.length === 0) {
+    if (toutesJournees.length === 0) {
         listeJournees.innerHTML = '<p class="messagePasDeDonnees">Aucune journée enregistrée pour le moment.</p>';
+        if (compteur) compteur.textContent = '';
         return;
     }
+
+    const filtres = getFiltres();
+    const journees = filterJournees(toutesJournees, filtres);
 
     // Trier par date (plus récente en haut)
     journees.sort(function(a, b) {
         return new Date(b.date) - new Date(a.date);
     });
+
+    if (journees.length === 0) {
+        listeJournees.innerHTML = '<p class="messagePasDeDonnees">Aucune journée ne correspond aux filtres sélectionnés.</p>';
+        if (compteur) compteur.textContent = '0 résultat sur ' + toutesJournees.length + ' journée(s)';
+        return;
+    }
+
+    if (compteur) compteur.textContent = journees.length + 'résultat(s) sur ' + toutesJournees.length + ' journée(s)';
 
     // Créer le tableau HTML
     let html = '<table class="tableHistorique">';
@@ -798,6 +815,48 @@ function afficherAnalyseIntelligente() {
 
     conteneur.innerHTML = html;
 }
+
+// FILTRES
+
+function getFiltres() {
+    return {
+        dateDebut: document.getElementById('filtreDateDebut').value,
+        dateFin: document.getElementById('filtreDateFin').value,
+        repas: document.getElementById('filtreRepas').value,
+        sport: document.getElementById('filtreSport').value,
+        symptomes: document.getElementById('filtreSymptomes').value
+    };
+}
+
+function filterJournees(journees, filtres) {
+    return journees.filter(function(journee) {
+        // Date début
+        if (filtres.dateDebut && journee.date < filtres.dateDebut) return false;
+        // Date fin
+        if (filtres.dateFin && journee.date > filtres.dateFin) return false;
+        // Repas
+        if (filtres.repas && !(journee.repas && journee.repas[filtres.repas])) return false;
+        // Sport
+        if (filtres.sport && !journee.sports.includes(filtres.sport)) return false;
+        // Symptômes
+        if (filtres.symptomes && journee.symptomes !== filtres.symptomes) return false;
+        return true;
+    });
+}
+
+// Ecouteurs sur les filtres
+['filtreDateDebut', 'filtreDateFin', 'filtreRepas', 'filtreSport', 'filtreSymptomes'].forEach(function(id) {
+    document.getElementById(id).addEventListener('change', afficherHistorique);
+})
+
+document.getElementById('boutonReinitialiserfiltres').addEventListener('click', function() {
+    document.getElementById('filtreDateDebut').value = '';
+    document.getElementById('filtreDateFin').value = '';
+    document.getElementById('filtreRepas').value = '';
+    document.getElementById('filtreSport').value = '';
+    document.getElementById('filtreSymptomes').value = '';
+    afficherHistorique();
+});
 
 // INITIALISATION
 
