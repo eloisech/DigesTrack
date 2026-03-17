@@ -1,6 +1,6 @@
 console.log("JavaScript chargé !");
 
-// CONFIGURATION INITIALE (AU CHARGEMENT)
+// CONFIGURATION INITIALE
 
 // Définir la date maximale à aujourd'hui
 const champDate = document.getElementById('date');
@@ -411,6 +411,7 @@ function modifierJournee(index) {
 let graphiqueSymptomes = null;
 let graphiqueTopAliments = null;
 let graphiqueCategories = null;
+let graphiqueSports = null;
 
 function afficherGraphiques() {
     const journees = getJournees();
@@ -425,6 +426,9 @@ function afficherGraphiques() {
         document.getElementById('messageGraphique3').textContent = 'Aucune donnée à afficher. Enregistrez votre première journée !';
         document.getElementById('messageGraphique3').style.display = 'block';
         document.getElementById('graphiqueCategories').style.display = 'none';
+        document.getElementById('messageGraphique4').textContent = 'Aucune donnée à afficher. Enregistrez votre première journée !';
+        document.getElementById('messageGraphique4').style.display = 'block';
+        document.getElementById('graphiqueSports').style.display = 'none';
         return;
     }
 
@@ -444,6 +448,9 @@ function afficherGraphiques() {
     
     // GRAPHIQUE 3 : Symptômes par catégorie
     afficherGraphiqueCategories(journees);
+
+    // GRAPHIQUE 4 : Symptômes par sport
+    afficherGraphiqueSports(journees);
 }
 
 function afficherGraphiqueSymptomes(journees) {
@@ -718,6 +725,92 @@ function afficherGraphiqueCategories(journees) {
     });
 }
 
+function afficherGraphiqueSports(journees) {
+    const stats = {
+        natation: {total: 0, symptomes: 0},
+        velo: {total: 0, symptomes: 0},
+        course: {total: 0, symptomes: 0},
+        aucun: {total: 0, symptomes: 0}
+    };
+
+    journees.forEach(function(journee) {
+        const avecSymptomes = journee.symptomes != 'aucun';
+        journee.sports.forEach(function(s) {
+            if (stats[s]) {
+                stats[s].total++;
+                if (avecSymptomes) stats[s].symptomes++;
+            }
+        });
+    });
+
+    const nomsSports = { natation: 'Natation', velo: 'Vélo', course: 'Course à pied', aucun: 'Aucun sport'};
+    const labels = [];
+    const data = [];
+    const couleurs = [];
+
+    Object.keys(stats).forEach(function(sport) {
+    if (stats[sport].total >= 1) {
+        labels.push(nomsSports[sport]);
+        const pct = (stats[sport].symptomes / stats[sport].total) * 100;
+        data.push(parseFloat(pct.toFixed(1)));
+        couleurs.push(pct > 66 ? '#F44336' : pct > 33 ? '#FF9800' : '#4CAF50');
+        }
+    });
+
+    if (labels.length === 0) {
+        document.getElementById('messageGraphique4').textContent = 'Aucune donnée disponible';
+        document.getElementById('messageGraphique4').style.display = 'block';
+        document.getElementById('graphiqueSports').style.display = 'none';
+        return;
+    }
+
+    document.getElementById('messageGraphique4').style.display = 'none';
+    document.getElementById('graphiqueSports').style.display = 'block';
+
+    if (graphiqueSports) graphiqueSports.destroy();
+
+    const ctx = document.getElementById('graphiqueSports').getContext('2d');
+    graphiqueSports = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '% de journées avec symptômes',
+                data: data,
+                backgroundColor: couleurs,
+                borderColor: couleurs.map(c => c === '#F44336' ? '#D32F2F' : c === '#FF9800' ? '#F57C00' : '#388E3C'),
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: { callback: function(v) { return v + '%'; } }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'Pourcentage de symptômes selon le sport pratiqué',
+                    font: { size: 14 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const s = Object.keys(stats)[context.dataIndex];
+                            return context.parsed.y + '% de symptômes (' + stats[s].total + ' journée(s))';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
 // ANALYSE INTELLIGENTE
 
 function afficherAnalyseIntelligente() {
@@ -814,6 +907,43 @@ function afficherAnalyseIntelligente() {
     }
 
     conteneur.innerHTML = html;
+
+    // Section : analyse combinaison sport X aliments
+    let combinaisons = {};
+
+    journees.forEach(j => {
+        // On ne regarde que les jours avec symptômes et avec du sport
+        if (j.symptomes !== 'aucun' && j.sports && j.sports.length > 0 && !j.sports.includes('aucun')) {
+            const aliments = getAlimentsJournee(j);
+
+            j.sports.forEach(sport => {
+                // Boucle sur chaque catégorie d'aliment
+                Object.keys(aliments).forEach(categorie => {
+                    if (aliments[categorie] && aliments[categorie].trim() !== "") {
+                        const nomsSports = { natation: 'Natation', velo: 'Vélo', course: 'Course à pied', aucun: 'Aucun sport' };
+                        const nomsCategories = { feculents: 'Féculents', proteines: 'Protéines', legumes: 'Légumes', fruits: 'Fruits', laitiers: 'Laitiers', lipides: 'Lipides', boissons: 'Boissons', autres: 'Autres' };
+                        const cle = `${nomsSports[sport]} + ${nomsCategories[categorie] || categorie}`;
+                        if (!combinaisons[cle]) combinaisons[cle] = 0;
+                        combinaisons[cle]++;
+                    }
+                });
+            });
+        }
+    });
+
+    // Trier pour trouver la combinaison la plus fréquente
+    let comboGagnant = Object.entries(combinaisons).sort((a,b) => b[1] - a[1])[0];
+    let messageCombo = "";
+
+    if (comboGagnant && comboGagnant[1] >= 2) { // Au moins 2 occurrences
+        messageCombo = `🔍 Combinaison la plus fréquente lors de vos périodes de symptômes : <strong>${comboGagnant[0]}</strong> (${comboGagnant[1]} fois)`;
+    }
+
+    // Affichage dans l'interface
+    const divCombo = document.getElementById('analyseCombinaisons');
+    if (divCombo) {
+        divCombo.innerHTML = messageCombo;
+    }
 }
 
 // FILTRES
@@ -858,6 +988,38 @@ document.getElementById('boutonReinitialiserfiltres').addEventListener('click', 
     afficherHistorique();
 });
 
+// ONGLETS
+
+document.querySelectorAll('.onglet').forEach(function(onglet) {
+    onglet.addEventListener('click', function() {
+        // Mettre à jour les onglets
+        document.querySelectorAll('.onglet').forEach(o => o.classList.remove('actif'));
+        this.classList.add('actif');
+
+        // Afficher la bonne section
+        const cible = this.dataset.cible;
+        document.querySelectorAll('main section').forEach(function(s) {
+            s.style.display = 'none';
+        });
+        document.getElementById(cible).style.display = 'block';
+
+        // Redessiner les graphiques si on reveient sur Statistiques
+        if (cible === 'statistiques') {
+            setTimeout(function() {
+                afficherGraphiques();
+            }, 50);
+        }
+    });
+});
+
+// Masquer la section historique au démarrage
+document.getElementById('historique').style.display = 'none';
+
+// Afficher uniquement la première section au démarrage
+document.querySelectorAll('main section').forEach((s,i) => {
+    s.style.display = i === 0 ? 'block' : 'none';
+});
+
 // INITIALISATION
 
 afficherHistorique();
@@ -889,15 +1051,16 @@ if (boutonExportCSV) {
             if (journee.symptomes === 'leger') symptomes = 'Léger';
             if (journee.symptomes === 'important') symptomes = 'Important';
             
+            const a = getAlimentsJournee(journee);
             csv += dateFormatee + ',';
-            csv += '"' + (journee.aliments.feculents || '') + '",';
-            csv += '"' + (journee.aliments.proteines || '') + '",';
-            csv += '"' + (journee.aliments.legumes || '') + '",';
-            csv += '"' + (journee.aliments.fruits || '') + '",';
-            csv += '"' + (journee.aliments.laitiers || '') + '",';
-            csv += '"' + (journee.aliments.lipides || '') + '",';
-            csv += '"' + (journee.aliments.boissons || '') + '",';
-            csv += '"' + (journee.aliments.autres || '') + '",';
+            csv += '"' + (a.feculents || '') + '",';
+            csv += '"' + (a.proteines || '') + '",';
+            csv += '"' + (a.legumes || '') + '",';
+            csv += '"' + (a.fruits || '') + '",';
+            csv += '"' + (a.laitiers || '') + '",';
+            csv += '"' + (a.lipides || '') + '",';
+            csv += '"' + (a.boissons || '') + '",';
+            csv += '"' + (a.autres || '') + '",';
             csv += sports + ',';
             csv += symptomes + '\n';
         });

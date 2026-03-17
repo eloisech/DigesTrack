@@ -13,6 +13,11 @@
         <p>Journal nutrition & digestion</p>
     </header>
 
+    <nav id="onglets">
+        <button class="onglet actif" data-cible="statistiques">Statistiques</button>
+        <button class="onglet" data-cible="historique">Historique</button>
+    </nav>
+
     <main>
         <!-- 1ère section : Statistiques -->
         <section id="statistiques">
@@ -39,11 +44,21 @@
                 <canvas id="graphiqueCategories"></canvas>
             </div>
 
+            <!-- Graphique 4 : Symptômes par sport -->
+             <div id="conteneurSports" class="conteneurGraphiqueIndividuel">
+                <h3 class="titreGraphique">🏃 Symptômes par sport</h3>
+                <p id="messageGraphique4" class="messagePasDeDonnees" style="display: none"></p>
+                <canvas id="graphiqueSports"></canvas>
+             </div>
+
             <!-- Analyse intelligente -->
             <div id="analyseIntelligente">
                 <h3 class="titreGraphique">💡 Analyse intelligente</h3>
                 <div id="contenuAnalyse"></div>
             </div>
+
+            <div id="analyseCombinaisons"></div>
+            
         </section>
 
         <!-- 2ème section : Historique -->

@@ -21,6 +21,40 @@ p {
     margin: 0.5rem 0 0 0;
 }
 
+#onglets {
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #ddd;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.onglet {
+    background: transparent;
+    color: #666;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 0;
+    transition: all 0.2s ease;
+}
+
+.onglet:hover {
+    color: #4A90E2;
+    background: transparent;
+
+}
+
+.onglet.actif {
+    color: #4A90E2;
+    border-bottom: 3px solid #4A90E2;
+    font-weight: bold;
+}
+
 main {
     max-width: 800px;
     margin: 2rem auto;
@@ -328,6 +362,15 @@ select {
 .messageAnalyseVide {
     color: #666;
     font-style: italic;
+}
+
+#analyseCombinaisons {
+    margin-top: 1rem;
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid #4A90E2;
+    color: #555;
 }
 
 /* Tableau historique */
