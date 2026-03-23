@@ -51,9 +51,9 @@
                 <canvas id="graphiqueSports"></canvas>
              </div>
 
-            <!-- Analyse intelligente -->
+            <!-- Analyse -->
             <div id="analyseIntelligente">
-                <h3 class="titreGraphique">💡 Analyse intelligente</h3>
+                <h3 class="titreGraphique">💡 Analyse</h3>
                 <div id="contenuAnalyse"></div>
             </div>
 
@@ -114,6 +114,7 @@
             </div>
 
             <button class="boutonExportCSV">📥 Exporter en CSV</button>
+            <button class="boutonExportPDF">📄 Exporter en PDF</button>
         </section>
     </main>
 
@@ -131,7 +132,7 @@
                 <label>Date :</label>
                 <input type="date" id="date" max="">
 
-                <h3 class="sousTitreFormulaire">Repas de la journée</h3>
+                <h3 class="sousTitreFormulaire">Repas de la journée* :</h3>
 
                 <div class="checkboxGroup">
                     <label class="checkboxLabel">
@@ -260,5 +261,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/app.js"></script> <!-- Liaison avec le code JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- Export PDF  -->
 </body>
 </html>

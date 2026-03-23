@@ -343,8 +343,8 @@ function afficherHistorique() {
         html += '<td>' + sportsTexte + '</td>';
         html += '<td class="' + classeSymptome + '">' + symptomeTexte + '</td>';
         html += '<td class="celluleActions">';
-        html += '<button class="boutonModifier" onclick="modifierJournee(' + index + ')">✏️ Modifier</button>';
-        html += '<button class="boutonSupprimer" onclick="supprimerJournee(' + index + ')">🗑️ Supprimer</button>';
+        html += '<button class="boutonModifier" onclick="modifierJournee(' + index + ')" style="width:110px">✏️ Modifier</button>';
+html += '<button class="boutonSupprimer" onclick="supprimerJournee(' + index + ')" style="width:110px">🗑️ Supprimer</button>';
         html += '</td>';
         html += '</tr>';
     });
@@ -359,6 +359,13 @@ function supprimerJournee(index) {
         journees.sort((a,b) => new Date(b.date) - new Date(a.date));
         journees.splice(index, 1);
         localStorage.setItem('journees', JSON.stringify(journees));
+
+        // Détruire les graphiques existants pour forcer un redessin propre
+        if (graphiqueSymptomes) { graphiqueSymptomes.destroy(); graphiqueSymptomes = null; }
+        if (graphiqueTopAliments) { graphiqueTopAliments.destroy(); graphiqueTopAliments = null; }
+        if (graphiqueCategories) { graphiqueCategories.destroy(); graphiqueCategories = null; }
+        if (graphiqueSports) { graphiqueSports.destroy(); graphiqueSports = null; }
+
         afficherHistorique();
         afficherGraphiques();
         afficherAnalyseIntelligente();
@@ -466,6 +473,7 @@ function afficherGraphiqueSymptomes(journees) {
 
     if (graphiqueSymptomes) {
         graphiqueSymptomes.destroy();
+        graphiqueSymptomes = null;
     }
 
     const ctx = document.getElementById('graphiqueSymptomes').getContext('2d');
@@ -561,6 +569,7 @@ function afficherGraphiqueTopAliments(journees) {
     // Créer le graphique
     if (graphiqueTopAliments) {
         graphiqueTopAliments.destroy();
+        graphiqueTopAliments = null;
     }
 
     // Couleurs selon le niveau de risque
@@ -688,6 +697,7 @@ function afficherGraphiqueCategories(journees) {
 
     if (graphiqueCategories) {
         graphiqueCategories.destroy();
+        graphiqueCategories = null;
     }
 
     const ctx = document.getElementById('graphiqueCategories').getContext('2d');
@@ -767,7 +777,10 @@ function afficherGraphiqueSports(journees) {
     document.getElementById('messageGraphique4').style.display = 'none';
     document.getElementById('graphiqueSports').style.display = 'block';
 
-    if (graphiqueSports) graphiqueSports.destroy();
+    if (graphiqueSports) {
+    graphiqueSports.destroy();
+    graphiqueSports = null;
+    }
 
     const ctx = document.getElementById('graphiqueSports').getContext('2d');
     graphiqueSports = new Chart(ctx, {
@@ -989,24 +1002,26 @@ document.getElementById('boutonReinitialiserfiltres').addEventListener('click', 
 });
 
 // ONGLETS
-
 document.querySelectorAll('.onglet').forEach(function(onglet) {
     onglet.addEventListener('click', function() {
-        // Mettre à jour les onglets
         document.querySelectorAll('.onglet').forEach(o => o.classList.remove('actif'));
         this.classList.add('actif');
 
-        // Afficher la bonne section
         const cible = this.dataset.cible;
         document.querySelectorAll('main section').forEach(function(s) {
             s.style.display = 'none';
         });
         document.getElementById(cible).style.display = 'block';
 
-        // Redessiner les graphiques si on reveient sur Statistiques
+        // Quand on revient sur Statistiques, détruire et redessiner tous les graphiques
         if (cible === 'statistiques') {
+            if (graphiqueSymptomes) { graphiqueSymptomes.destroy(); graphiqueSymptomes = null; }
+            if (graphiqueTopAliments) { graphiqueTopAliments.destroy(); graphiqueTopAliments = null; }
+            if (graphiqueCategories) { graphiqueCategories.destroy(); graphiqueCategories = null; }
+            if (graphiqueSports) { graphiqueSports.destroy(); graphiqueSports = null; }
             setTimeout(function() {
                 afficherGraphiques();
+                afficherAnalyseIntelligente();
             }, 50);
         }
     });
@@ -1016,7 +1031,7 @@ document.querySelectorAll('.onglet').forEach(function(onglet) {
 document.getElementById('historique').style.display = 'none';
 
 // Afficher uniquement la première section au démarrage
-document.querySelectorAll('main section').forEach((s,i) => {
+document.querySelectorAll('main section').forEach((s, i) => {
     s.style.display = i === 0 ? 'block' : 'none';
 });
 
@@ -1044,7 +1059,8 @@ if (boutonExportCSV) {
         
         journees.forEach(function(journee) {
             const dateFormatee = new Date(journee.date + 'T00:00:00').toLocaleDateString('fr-FR');
-            const sports = journee.sports.join(' + ');
+            const nomsSports = { natation: 'Natation', velo: 'Vélo', course: 'Course à pied', aucun: 'Aucun' };
+const sports = journee.sports.map(s => nomsSports[s] || s).join(' + ');
             
             let symptomes = journee.symptomes;
             if (journee.symptomes === 'aucun') symptomes = 'Aucun';
@@ -1078,3 +1094,90 @@ if (boutonExportCSV) {
         alert("✅ Export CSV réussi ! Le fichier a été téléchargé.");
     });
 }
+
+// BOUTON EXPORT PDF
+const boutonExportPDF = document.querySelector('.boutonExportPDF');
+
+if (boutonExportPDF) {
+    boutonExportPDF.addEventListener('click', function() {
+        const journees = getJournees();
+
+        if (journees.length === 0) {
+            alert('⚠️ Aucune donnée à exporter');
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // En-tête
+        doc.setFontSize(20);
+        doc.setTextColor(74, 144, 226);
+        doc.text('DigesTrack', 105, 20, { align: 'center' });
+
+        doc.setFontSize(11);
+        doc.setTextColor(100);
+        doc.text('Journal nutrition & digestion', 105, 28, { align: 'center' });
+
+        doc.setFontSize(9);
+        doc.text('Exporté le ' + new Date().toLocaleDateString('fr-FR'), 105, 35, { align: 'center' });
+
+        // Ligne de séparation
+        doc.setDrawColor(74, 144, 226);
+        doc.line(15, 40, 195, 40);
+
+        // Trier par date
+        journees.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        let y = 50;
+
+        journees.forEach(function(journee, i) {
+            // Saut de page si nécessaire
+            if (y > 260) {
+                doc.addPage();
+                y = 20;
+            }
+
+            // Date
+            doc.setFontSize(11);
+            doc.setTextColor(74, 144, 226);
+            const date = new Date(journee.date + 'T00:00:00').toLocaleDateString('fr-FR');
+            doc.text(date, 15, y);
+
+            // Symptômes
+            const symptomesTexte = { aucun: 'Aucun', leger: 'Léger', important: 'Important' };
+            const couleurSymptome = { aucun: [76, 175, 80], leger: [255, 152, 0], important: [244, 67, 54] };
+            const c = couleurSymptome[journee.symptomes] || [0, 0, 0];
+            doc.setTextColor(c[0], c[1], c[2]);
+            doc.text('Symptômes : ' + (symptomesTexte[journee.symptomes] || journee.symptomes), 120, y);
+            y += 7;
+
+            // Sports
+            doc.setFontSize(9);
+            doc.setTextColor(80);
+            const nomsSports = { natation: 'Natation', velo: 'Vélo', course: 'Course à pied', aucun: 'Aucun' };
+            const sportsTexte = journee.sports.map(s => nomsSports[s] || s).join(', ');
+            doc.text('Sport(s) : ' + sportsTexte, 15, y);
+            y += 6;
+
+            // Aliments
+            const aliments = getAlimentsJournee(journee);
+            const nomsCategories = { feculents: 'Féculents', proteines: 'Protéines', legumes: 'Légumes', fruits: 'Fruits', laitiers: 'Laitiers', lipides: 'Lipides', boissons: 'Boissons', autres: 'Autres' };
+            Object.keys(aliments).forEach(function(cat) {
+                if (aliments[cat]) {
+                    if (y > 270) { doc.addPage(); y = 20; }
+                    doc.text(nomsCategories[cat] + ' : ' + aliments[cat], 15, y);
+                    y += 5;
+                }
+            });
+
+            // Séparateur entre journées
+            doc.setDrawColor(220);
+            doc.line(15, y + 2, 195, y + 2);
+            y += 8;
+        });
+
+        doc.save('digesttrack-export.pdf');
+        alert('✅ Export PDF réussi !');
+    });
+} 
