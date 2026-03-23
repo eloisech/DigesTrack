@@ -79,6 +79,22 @@ header::after {
     pointer-events: none;
 }
 
+.headerContenu { 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 1.25rem; ... 
+}
+
+.headerLogo { 
+    width: 56px;
+    height: 56px; 
+    object-fit: contain; 
+    filter: drop-shadow(...); 
+}
+
+.headerTexte { text-align: left; }
+
 h1 {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 3rem;
@@ -86,8 +102,6 @@ h1 {
     margin: 0;
     letter-spacing: 2px;
     text-transform: uppercase;
-    position: relative;
-    z-index: 1;
 }
 
 header p {
@@ -97,19 +111,44 @@ header p {
     letter-spacing: 2px;
     text-transform: uppercase;
     font-weight: 500;
-    position: relative;
-    z-index: 1;
 }
 
 /* ONGLETS */
 #onglets {
     background-color: #FFFFFF;
     display: flex;
+    align-items: center;
     justify-content: center;
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
     z-index: 50;
+}
+
+.navLogo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-shrink: 0;
+}
+
+.navLogoImg {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.navLogoTitre {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--texte);
+}
+
+.navOnglets {
+    display: flex;
 }
 
 .onglet {
@@ -763,6 +802,9 @@ textarea {
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
+
+    .headerLogo {width: 52px; height: 52px;}
+
     h1 { font-size: 2.2rem; }
 
     .boutonFlottant {
