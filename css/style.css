@@ -188,27 +188,9 @@ section {
     overflow: hidden;
 }
 
-#statistiques::before {
-    content: '📊';
-    position: absolute;
-    font-size: 8rem;
-    opacity: 0.025;
-    bottom: -1rem;
-    right: 1rem;
-    pointer-events: none;
-    line-height: 1;
-}
+#statistiques::before { display: none; }
 
-#historique::before {
-    content: '📋';
-    position: absolute;
-    font-size: 8rem;
-    opacity: 0.025;
-    bottom: -1rem;
-    right: 1rem;
-    pointer-events: none;
-    line-height: 1;
-}
+#historique::before { display: none; }
 
 h2 {
     font-family: 'Barlow Condensed', sans-serif;
