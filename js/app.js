@@ -814,8 +814,9 @@ function afficherGraphiqueSports(journees) {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            const s = Object.keys(stats)[context.dataIndex];
-                            return context.parsed.y + '% de symptômes (' + stats[s].total + ' journée(s))';
+                            const sportsAffichees = Object.keys(stats).filter(s => stats[s].total >= 1);
+                            const s = sportsAffichees[context.dataIndex];
+                            return context.parsed.y + '% de symptômes (' + stats[s].total + ' journée(s) au total)';
                         }
                     }
                 }
