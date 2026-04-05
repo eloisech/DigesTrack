@@ -507,6 +507,13 @@ textarea {
     margin-bottom: 1rem;
 }
 
+#graphiqueSymptomes,
+#graphiqueTopAliments,
+#graphiqueCategories,
+#graphiqueSports {
+    display: none;
+}
+
 /* ANALYSE AUTOMATIQUE */
 #analyseAutomatique {
     background: rgba(74, 158, 255, 0.06);

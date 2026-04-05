@@ -834,7 +834,9 @@ function afficherAnalyseAutomatique() {
     if (journees.length === 0) {
         divAnalyse.style.display = 'block';
         document.getElementById('contenuAnalyse').innerHTML = '<p class="messageAnalyseVide">Aucune donnée à afficher. Enregistrez votre première journée !</p>';
-        document.getElementById('analyseCombinaisons').style.display = 'none';
+        const divComboVide = document.getElementById('analyseCombinaisons');
+        divComboVide.innerHTML = '<span class="messageAnalyseVide">Pas encore assez de données pour identifier une combinaison sport + aliments à risque.</span>';
+        divComboVide.style.display = 'block';
         return;
     }
     divAnalyse.style.display = 'block';
