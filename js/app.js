@@ -832,7 +832,8 @@ function afficherAnalyseAutomatique() {
 
     const divAnalyse = document.getElementById('analyseAutomatique');
     if (journees.length === 0) {
-        divAnalyse.style.display = 'none';
+        divAnalyse.style.display = 'block';
+        document.getElementById('contenuAnalyse').innerHTML = '<p class="messageAnalyseVide">Aucune donnée à afficher. Enregistrez votre première journée !</p>';
         document.getElementById('analyseCombinaisons').style.display = 'none';
         return;
     }
