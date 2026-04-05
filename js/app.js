@@ -194,11 +194,10 @@ formulaire.addEventListener('submit', function(e) {
     
     // Afficher les mises à jour (après fermeture pour éviter les blocages)
     afficherHistorique();
-    afficherAnalyseAutomatique();
 
     setTimeout(function() {
         afficherGraphiques();
-
+        afficherAnalyseAutomatique(); // ← déplacer ici
     }, 50);
 
     console.log("✅ Journée sauvegardée :", journee);
@@ -951,15 +950,16 @@ function afficherAnalyseAutomatique() {
     let comboGagnant = Object.entries(combinaisons).sort((a,b) => b[1] - a[1])[0];
     let messageCombo = "";
 
-    if (comboGagnant && comboGagnant[1] >= 2) { // Au moins 2 occurrences
+    if (comboGagnant && comboGagnant[1] >= 2) {
         messageCombo = `🔍 Combinaison la plus fréquente lors de vos périodes de symptômes : <strong>${comboGagnant[0]}</strong> (${comboGagnant[1]} fois)`;
+    } else {
+        messageCombo = `<span class="messageAnalyseVide">Pas encore assez de données pour identifier une combinaison sport + aliments à risque.</span>`;
     }
 
-    // Affichage dans l'interface
     const divCombo = document.getElementById('analyseCombinaisons');
     if (divCombo) {
         divCombo.innerHTML = messageCombo;
-        divCombo.style.display = messageCombo ? 'block' : 'none';
+        divCombo.style.display = 'block';
     }
 }
 
