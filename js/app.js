@@ -661,7 +661,7 @@ function afficherGraphiqueCategories(journees) {
     // Calculer les pourcentages et préparer les données
     const labels = [];
     const data = [];
-    const couleurs = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'];
+    const couleurs = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#E8A838', '#C9CBCF'];
     const couleursFinales = [];
 
     let index = 0;
