@@ -55,16 +55,7 @@ header {
 }
 
 header::before {
-    content: '🏊 🚴 🏃';
-    position: absolute;
-    font-size: 5rem;
-    opacity: 0.04;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    white-space: nowrap;
-    letter-spacing: 2rem;
-    pointer-events: none;
+    display: none;
 }
 
 header::after {
@@ -225,7 +216,7 @@ h2 {
     font-size: 1.5rem;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: var(--blanc);
+    color: var(--texte);
     margin-top: 0;
     margin-bottom: 1.5rem;
     padding-bottom: 0.75rem;
@@ -516,8 +507,8 @@ textarea {
     margin-bottom: 1rem;
 }
 
-/* ANALYSE INTELLIGENTE */
-#analyseIntelligente {
+/* ANALYSE AUTOMATIQUE */
+#analyseAutomatique {
     background: rgba(74, 158, 255, 0.06);
     padding: 1.5rem;
     border-radius: var(--rayon);
@@ -525,7 +516,7 @@ textarea {
     border-left: 4px solid var(--bleu-accent);
 }
 
-#analyseIntelligente .titreGraphique {
+#analyseAutomatique .titreGraphique {
     margin-top: 0;
     color: var(--bleu-accent);
 }
@@ -576,6 +567,9 @@ textarea {
     border-left: 4px solid var(--orange);
     color: var(--texte);
     font-size: 0.95rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow: hidden;
 }
 
 /* TABLEAU HISTORIQUE */

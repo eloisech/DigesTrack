@@ -194,7 +194,7 @@ formulaire.addEventListener('submit', function(e) {
     
     // Afficher les mises à jour (après fermeture pour éviter les blocages)
     afficherHistorique();
-    afficherAnalyseIntelligente();
+    afficherAnalyseAutomatique();
 
     setTimeout(function() {
         afficherGraphiques();
@@ -368,7 +368,7 @@ function supprimerJournee(index) {
 
         afficherHistorique();
         afficherGraphiques();
-        afficherAnalyseIntelligente();
+        afficherAnalyseAutomatique();
     }
 }
 
@@ -824,16 +824,18 @@ function afficherGraphiqueSports(journees) {
     });
 }
 
-// ANALYSE INTELLIGENTE
+// ANALYSE AUTOMATIQUE
 
-function afficherAnalyseIntelligente() {
+function afficherAnalyseAutomatique() {
     const journees = getJournees();
     const conteneur = document.getElementById('contenuAnalyse');
 
+    const divAnalyse = document.getElementById('analyseAutomatique');
     if (journees.length === 0) {
-        conteneur.innerHTML = '<p class="messageAnalyseVide">Pas encore assez de données pour générer une analyse.</p>';
+        divAnalyse.style.display = 'none';
         return;
     }
+    divAnalyse.style.display = 'block';
 
     // Analyser les aliments
     const compteurAliments = {};
@@ -956,6 +958,7 @@ function afficherAnalyseIntelligente() {
     const divCombo = document.getElementById('analyseCombinaisons');
     if (divCombo) {
         divCombo.innerHTML = messageCombo;
+        divCombo.style.display = messageCombo ? 'block' : 'none';
     }
 }
 
@@ -1021,7 +1024,7 @@ document.querySelectorAll('.onglet').forEach(function(onglet) {
             if (graphiqueSports) { graphiqueSports.destroy(); graphiqueSports = null; }
             setTimeout(function() {
                 afficherGraphiques();
-                afficherAnalyseIntelligente();
+                afficherAnalyseAutomatique();
             }, 50);
         }
     });
@@ -1039,7 +1042,7 @@ document.querySelectorAll('main section').forEach((s, i) => {
 
 afficherHistorique();
 afficherGraphiques();
-afficherAnalyseIntelligente();
+afficherAnalyseAutomatique();
 
 // BOUTON D'EXPORT CSV
 
