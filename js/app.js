@@ -1,4 +1,4 @@
-console.log("JavaScript chargé !");
+// DIGESTRACK - app.js
 
 // CONFIGURATION INITIALE
 
@@ -22,6 +22,7 @@ const boutonOuvrirFormulaire = document.getElementById('boutonOuvrirFormulaire')
 const overlayFormulaire = document.getElementById('overlayFormulaire');
 const boutonFermerFormulaire = document.getElementById('boutonFermerFormulaire');
 
+// Réinitialise le formulaire : valeurs, date du jour, blocs repas masqués et supprime l'index de modification en cours si existant
 function reinitialiserFormulaire(){
     formulaire.reset();
     champDate.valueAsDate = new Date();
@@ -33,6 +34,7 @@ function reinitialiserFormulaire(){
 
 // Gestion de l'affichage des blocs repas
 const repasTypes = ['petitDejeuner', 'dejeuner', 'gouter', 'diner'];
+// Affiche le bloc d'aliments correspondant au repas sélectionné et masque tous les autres (un seul bloc visible à la fois)
 document.querySelectorAll('input[name="repas"]').forEach(function(radio) {
     radio.addEventListener('change', function() {
         // Cachet tous les blocs
@@ -84,6 +86,7 @@ autresCheckboxes.forEach(function (checkbox) {
 });
 
 // SOUMISSION DU FORMULAIRE
+// Récupère, valide et sauvegarde les données de la journée. Gère à a fois le mode "ajout" et le mode "modification"
 
 formulaire.addEventListener('submit', function(e) {
     e.preventDefault(); // Empêche le rechargement de la page
@@ -167,6 +170,7 @@ formulaire.addEventListener('submit', function(e) {
     };
 
     // Sauvegarder dans LocalStorage
+    // Si un index est mémorisé dans dataset, on est en mode modification : on écrase l'entrée existante plutôt que d'en créer une nouvelle
     const indexModification = formulaire.dataset.indexModification;
     if (indexModification !== undefined && indexModification !== '') {
         // Mode modification : écraser l'entrée existante
@@ -195,6 +199,7 @@ formulaire.addEventListener('submit', function(e) {
     // Afficher les mises à jour (après fermeture pour éviter les blocages)
     afficherHistorique();
 
+    // Délai nécessaire pour laisser le DOM se mettre à jour avant de redessiner les graphiques (évite les bugs d'affichage)
     setTimeout(function() {
         afficherGraphiques();
         afficherAnalyseAutomatique(); // ← déplacer ici
@@ -204,7 +209,7 @@ formulaire.addEventListener('submit', function(e) {
     alert("✅ Journée enregistrée avec succès !");
 });
 
-// FONCTIONS LOCALSTORAGE
+// FONCTIONS LOCALSTORAGE (CRUD)
 
 // Récupérer toutes les journées du LocalStorage
 function getJournees() {
@@ -212,7 +217,7 @@ function getJournees() {
     if (journeesJSON) {
         const journees = JSON.parse(journeesJSON);
         
-        // Migration : convertir anciennes données (format "repas" en string) vers nouveau format
+        // Convertit les anciennes entrées (repas en string) vers le nouveau format structuré par catégorie d'aliments
         return journees.map(function(journee) {
             // Si l'ancien format existe (repas en string)
             if (journee.repas && typeof journee.repas === 'string' && !journee.aliments) {
@@ -246,7 +251,7 @@ function saveJournee(journee) {
     localStorage.setItem('journees', JSON.stringify(journees));
 }
 
-// Aplatir tous les repas d'une journée en un objet aliment unique
+// Fusionne tous les repas d'une journée en un seul objet {feculents, proteines...}. Utilisé pour les graphiques et les exports qui n'ont pas besoin du détail par repas 
 function getAlimentsJournee(journee) {
     if (journee.aliments) return journee.aliments;
     const aliments = {feculents: '', proteines: '', legumes: '', fruits: '', laitiers: '', lipides: '', boissons: '', autres: ''};
@@ -263,6 +268,7 @@ function getAlimentsJournee(journee) {
 }
 
 // AFFICHAGE HISTORIQUE
+// Génère le tableau HTML des journées en appliquant les filtres actifs
 
 function afficherHistorique() {
     const toutesJournees = getJournees();
@@ -302,6 +308,7 @@ function afficherHistorique() {
     html += '</tr></thead>';
     html += '<tbody>';
 
+    // Construction ligne par ligne du tableau HTML. L'index sert à cibler la bonne entrée pour modifier/supprimer
     journees.forEach(function(journee, index) {
         let classeSymptome = 'symptome-' + journee.symptomes;
         const nomsSports = { natation: 'Natation', velo: 'Vélo', course: 'Course', aucun: 'Aucun'};
@@ -352,6 +359,7 @@ html += '<button class="boutonSupprimer" onclick="supprimerJournee(' + index + '
     listeJournees.innerHTML = html;
 }
 
+// Supprime la journée à l'index donné (dans la liste triée par date décroissante) puis détruit et redessine tous les graphiques pour rester cohérent
 function supprimerJournee(index) {
     if (confirm("Êtes-vous sûr de vouloir supprimer cette journée ?")) {
         const journees = getJournees();
@@ -371,6 +379,7 @@ function supprimerJournee(index) {
     }
 }
 
+// Pré-remplit le formulaire avec les données de la journée sélectionnée et mémorise son index dans dataset pour qu'à la soumission on écrase au lieu d'ajouter
 function modifierJournee(index) {
     const journees = getJournees();
     journees.sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -412,13 +421,15 @@ function modifierJournee(index) {
     overlayFormulaire.classList.add('active');
 }
 
-// AFFICHAGE GRAPHIQUES
+// AFFICHAGE GRAPHIQUES (Chart.js)
+// Les 4 variables globales permettent de destroy() avant de recréer pour éviter l'erreur "Canvas already in use"
 
 let graphiqueSymptomes = null;
 let graphiqueTopAliments = null;
 let graphiqueCategories = null;
 let graphiqueSports = null;
 
+// Vérifie s'il y a des données, affiche/masque les messages d'attente, puis appelle chacune des 4 fonctions de dessin
 function afficherGraphiques() {
     const journees = getJournees();
     
@@ -470,6 +481,7 @@ function afficherGraphiqueSymptomes(journees) {
         if (journee.symptomes === 'important') important++;
     });
 
+    // Destruction de l'instance précédente obligatoire avant d'en créer une nouvelle, sinon Chart.js lève une erreur "Canvas already in use"
     if (graphiqueSymptomes) {
         graphiqueSymptomes.destroy();
         graphiqueSymptomes = null;
@@ -571,7 +583,7 @@ function afficherGraphiqueTopAliments(journees) {
         graphiqueTopAliments = null;
     }
 
-    // Couleurs selon le niveau de risque
+    // Code couleur selon le niveau de risque : rouge >75%, orange >50%, jaune sinon
     const couleurs = top10.map(function(item) {
         if (item.pourcentage > 75) return '#F44336'; // Rouge
         if (item.pourcentage > 50) return '#FF9800'; // Orange
@@ -825,6 +837,8 @@ function afficherGraphiqueSports(journees) {
 }
 
 // ANALYSE AUTOMATIQUE
+// Pour chaque aliment consommé ≥2 fois : "suspect" si présent dans >60% des journées avec symptômes et "bien toléré" si 0% de symptômes associés
+// Identifie aussi la combinaison sport + catégorie la plus fréquente lors des journées avec symptômes
 
 function afficherAnalyseAutomatique() {
     const journees = getJournees();
@@ -851,6 +865,7 @@ function afficherAnalyseAutomatique() {
             const alimentsTexte = aliments[categorie];
         
             if (alimentsTexte) {
+                // Découpe la saisie libre en aliments individuels (séparateur : virgule ou "+")
                 const alimentsSepares = alimentsTexte.split(/[,+]/).map(a => a.trim().toLowerCase());
                 
                 alimentsSepares.forEach(function(aliment) {
@@ -950,7 +965,7 @@ function afficherAnalyseAutomatique() {
         }
     });
 
-    // Trier pour trouver la combinaison la plus fréquente
+    // Trouve la combinaison sport+catégorie la plus fréquente (minimum 2 occurrences)
     let comboGagnant = Object.entries(combinaisons).sort((a,b) => b[1] - a[1])[0];
     let messageCombo = "";
 
@@ -995,7 +1010,7 @@ function filterJournees(journees, filtres) {
     });
 }
 
-// Ecouteurs sur les filtres
+// Ecouteurs sur les filtres : recharge l'historique à chaque changement de filtre (date, repas, sport, symptômes)
 ['filtreDateDebut', 'filtreDateFin', 'filtreRepas', 'filtreSport', 'filtreSymptomes'].forEach(function(id) {
     document.getElementById(id).addEventListener('change', afficherHistorique);
 })
@@ -1021,7 +1036,7 @@ document.querySelectorAll('.onglet').forEach(function(onglet) {
         });
         document.getElementById(cible).style.display = 'block';
 
-        // Quand on revient sur Statistiques, détruire et redessiner tous les graphiques
+        // Quand on revient sur l'onglet Statistiques, on détruit toutes les instances Chart.js et on attend 50ms que le canvas soit visible avant de redessiner
         if (cible === 'statistiques') {
             if (graphiqueSymptomes) { graphiqueSymptomes.destroy(); graphiqueSymptomes = null; }
             if (graphiqueTopAliments) { graphiqueTopAliments.destroy(); graphiqueTopAliments = null; }

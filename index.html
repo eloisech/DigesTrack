@@ -1,3 +1,5 @@
+<!-- DIGESTRACK - index.html -->
+
 <!-- Structure HTML de base -->
 <!DOCTYPE html>
 <html lang="fr">
@@ -19,6 +21,7 @@
         </div>
     </header>
 
+    <!-- Navigation par onglets : Statistiques / Historique -->
     <nav id="onglets">
         <button class="onglet actif" data-cible="statistiques">Statistiques</button>
         <button class="onglet" data-cible="historique">Historique</button>
@@ -27,11 +30,11 @@
     <main>
         <!-- 1ère section : Statistiques -->
         <section id="statistiques">
-            <h2>📊 Statistiques et Analyses</h2>
+            <h2>📈 Statistiques et Analyses</h2>
 
             <!-- Graphique 1 : Répartition générale des symptômes -->
             <div id="conteneurGraphique" class="conteneurGraphiqueIndividuel">
-                <h3 class="titreGraphique">Répartition des symptômes digestifs</h3>
+                <h3 class="titreGraphique">📊 Répartition des symptômes digestifs</h3>
                 <p id="messageGraphique1" class="messagePasDeDonnees" style="display:none"></p>
                 <canvas id="graphiqueSymptomes"></canvas>
             </div>
@@ -71,6 +74,7 @@
         <section id="historique">
             <h2>📜 Historique</h2>
 
+            <!-- Filtres de l'historique : période, type de repas, sport, symptômes -->
             <div id="filtres">
                 <div class="filtresLigne">
                     <div class="filtreGroupe">
@@ -124,7 +128,7 @@
         </section>
     </main>
 
-    <!-- Bouton flottant pour ouvrir le formulaire -->
+    <!-- Bouton flottant (bas droite) pour ouvrir le formulaire de saisie -->
      <button id="boutonOuvrirFormulaire" class="boutonFlottant" title="Ajouter une journée">➕</button>
 
      <!-- Overlay (fond sombre) avec le formulaire -->
@@ -155,7 +159,7 @@
                     </label>
                 </div>
 
-                <!-- Blocs par repas -->
+                <!-- Blocs repas masqués par défaut, affichés dynamiquement selon le bouton radio sélectionné -->
                 <div id="bloc-petitDejeuner" class="blocRepas" style="display:none">
                     <h4 class="titreBlocRepas">Petit-déjeuner</h4>
                     <label>🌾 Féculents :</label>
@@ -265,7 +269,8 @@
         </div>
       </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Librairies externes : Chart.js pour les graphiques, jsPDF pour l'export PDF -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Graphiques avec Chart.js -->
     <script src="js/app.js"></script> <!-- Liaison avec le code JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- Export PDF  -->
 </body>

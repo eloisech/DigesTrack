@@ -1,12 +1,9 @@
-/*=========================================
-   DigesTrack — Dark Sport Edition
-   Inspiré Strava · Garmin · Kiprun
-   Palette : #1C1F26 + #FF5500
-  ========================================= */
+/* DIGESTRACK - style.CSS */
 
+/* Polices : Barlow Condensed pour les titres/labels (style sport), DM Sans pour le corps de texte (lisibilité) */
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700;800&family=DM+Sans:wght@400;500&display=swap');
 
-/* VARIABLES */
+/* Variables globales : couleurs, ombres, rayons de bordure */
 :root {
     --bg: #F4F6F8;
     --bg-card: #FFFFFF;
@@ -54,6 +51,7 @@ header {
     border-bottom: 2px solid var(--orange);
 }
 
+/* Effet décoratif : halo orange en haut à droite du header */
 header::before {
     display: none;
 }
@@ -74,14 +72,14 @@ header::after {
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    gap: 1.25rem; ... 
+    gap: 1.25rem; 
 }
 
 .headerLogo { 
     width: 56px;
     height: 56px; 
     object-fit: contain; 
-    filter: drop-shadow(...); 
+    filter: drop-shadow(); 
 }
 
 .headerTexte { text-align: left; }
@@ -105,6 +103,7 @@ header p {
 }
 
 /* ONGLETS */
+/* Barre de navigation : reste visible en haut au scroll */
 #onglets {
     background-color: #FFFFFF;
     display: flex;
@@ -164,6 +163,7 @@ header p {
     background: rgba(255, 255, 255, 0.03);
 }
 
+/* Indicateur visuel de l'onglet actif : soulignement orange */
 .onglet.actif {
     color: var(--orange);
     border-bottom: 3px solid var(--orange);
@@ -293,6 +293,7 @@ textarea {
 }
 
 /* BOUTON FLOTTANT */
+/* Bouton "+" fixe en bas à droite, toujours visible quelle que soit la position de scroll */
 .boutonFlottant {
     position: fixed;
     bottom: 2rem;
@@ -321,6 +322,7 @@ textarea {
 }
 
 /* OVERLAY */
+/* Fond semi-transparent qui couvre toute la page quand le formulaire est ouvert */
 .overlay {
     display: none;
     position: fixed;
@@ -335,6 +337,7 @@ textarea {
     padding: 2rem 1rem;
 }
 
+/* Classe ajoutée par JS pour afficher l'overlay */
 .overlay.active {
     display: flex;
     justify-content: center;
@@ -361,6 +364,7 @@ textarea {
     border-top: 3px solid var(--orange);
 }
 
+/* Animation d'entrée de la modale : glisse depuis le haut */
 @keyframes slideDown {
     from { transform: translateY(-20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
@@ -407,6 +411,7 @@ textarea {
 .labelSport { margin-top: 1rem; }
 
 /* BLOCS REPAS */
+/* Blocs de saisie par repas, affichés/masqués dynamiquement selon le bouton radio coché. Bordure gauche orange pour marquer visuellement la catégorie */
 .blocRepas {
     background: var(--bg-input);
     border-left: 3px solid var(--orange);
@@ -547,6 +552,7 @@ textarea {
     font-size: 0.9rem;
 }
 
+/* Encadré orange pour la combinaison sport + aliment la plus fréquente. word-wrap évite le débordement sur les longues chaînes de texte */
 #analyseCombinaisons {
     margin-top: 1rem;
     background: var(--orange-pale);
@@ -602,7 +608,7 @@ textarea {
     color: var(--texte-doux);
 }
 
-/* CODE COULEUR SYMPTÔMES */
+/* CODE COULEUR SYMPTÔMES : vert = aucun, jaune = léger, rouge = important. Utilisé dans le tableau historique et repris dans les graphiques */
 .symptome-aucun {
     color: var(--vert-ok);
     font-weight: 700;
@@ -784,6 +790,7 @@ textarea {
 }
 
 /* RESPONSIVE */
+/* Adaptations mobile : taille des boutons, modale pleine largeur, tableau plus compact, boutons d'action empilés verticalement */
 @media (max-width: 768px) {
 
     .headerLogo {width: 52px; height: 52px;}
