@@ -188,6 +188,7 @@ formulaire.addEventListener('submit', function(e) {
     }
 
     overlayFormulaire.classList.remove('active');
+    document.body.style.overflow = '';
     reinitialiserFormulaire();
 
     // Réinitialiser le formulaire
