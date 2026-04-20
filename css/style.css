@@ -342,6 +342,7 @@ textarea {
     display: flex;
     justify-content: center;
     align-items: flex-start;
+    overflow-y: auto;
     animation: fadeIn 0.2s ease;
 }
 
@@ -459,7 +460,7 @@ textarea {
 
 .checkboxLabel:hover {
     background: var(--orange-pale);
-    color: var(--blanc);
+    color: var(--orange-fonce);
 }
 
 .checkboxLabel input[type="checkbox"],
@@ -483,6 +484,12 @@ textarea {
     padding-bottom: 2rem;
     border-bottom: 1px solid var(--border);
 }
+
+#conteneurGraphique {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+} 
 
 .titreGraphique {
     font-family: 'Barlow Condensed', sans-serif;

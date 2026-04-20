@@ -49,12 +49,14 @@ document.querySelectorAll('input[name="repas"]').forEach(function(radio) {
 // Ouvrir le formulaire
 boutonOuvrirFormulaire.addEventListener('click', function() {
     overlayFormulaire.classList.add('active');
+    document.body.style.overflow = 'hidden';
 });
 
 // Fermer le formulaire (bouton X)
 boutonFermerFormulaire.addEventListener('click', function() {
     overlayFormulaire.classList.remove('active');
     reinitialiserFormulaire();
+    document.body.style.overflow = '';
 });
 
 // Fermer le formulaire (clic sur l'overlay)
@@ -62,6 +64,7 @@ overlayFormulaire.addEventListener('click', function(e) {
     if (e.target === overlayFormulaire) {
         overlayFormulaire.classList.remove('active');
         reinitialiserFormulaire();
+        document.body.style.overflow = '';
     }
 });
 

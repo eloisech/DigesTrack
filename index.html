@@ -28,10 +28,19 @@
     </nav>
 
     <main>
-        <!-- 1ère section : Statistiques -->
+        <!-- Onglet Statistiques -->
         <section id="statistiques">
-            <h2>📈 Statistiques et Analyses</h2>
+            <h2>📈 Analyses et Statistiques</h2>
 
+            <!-- 1ère section : Analyse -->
+            <div id="analyseAutomatique">
+                <h3 class="titreGraphique">💡 Analyse</h3>
+                <div id="contenuAnalyse"></div>
+            </div>
+
+            <div id="analyseCombinaisons"></div>
+
+            <!-- 2ème section : Graphiques -->
             <!-- Graphique 1 : Répartition générale des symptômes -->
             <div id="conteneurGraphique" class="conteneurGraphiqueIndividuel">
                 <h3 class="titreGraphique">📊 Répartition des symptômes digestifs</h3>
@@ -59,18 +68,9 @@
                 <p id="messageGraphique4" class="messagePasDeDonnees" style="display: none"></p>
                 <canvas id="graphiqueSports"></canvas>
              </div>
-
-            <!-- Analyse -->
-            <div id="analyseAutomatique">
-                <h3 class="titreGraphique">💡 Analyse</h3>
-                <div id="contenuAnalyse"></div>
-            </div>
-
-            <div id="analyseCombinaisons"></div>
-            
         </section>
 
-        <!-- 2ème section : Historique -->
+        <!-- Onglet Historique -->
         <section id="historique">
             <h2>📜 Historique</h2>
 
